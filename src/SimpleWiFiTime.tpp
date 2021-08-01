@@ -1,22 +1,22 @@
 /**
- * @file       TinyGsmTime.tpp
+ * @file       SimpleWiFiTime.tpp
  * @author     Volodymyr Shymanskyy
  * @license    LGPL-3.0
  * @copyright  Copyright (c) 2016 Volodymyr Shymanskyy
  * @date       Nov 2016
  */
 
-#ifndef SRC_TINYGSMTIME_H_
-#define SRC_TINYGSMTIME_H_
+#ifndef SRC_SIMPLEWIFITIME_H_
+#define SRC_SIMPLEWIFITIME_H_
 
-#include "TinyGsmCommon.h"
+#include "SimpleWiFiCommon.h"
 
-#define TINY_GSM_MODEM_HAS_TIME
+#define SIMPLE_WIFI_MODEM_HAS_TIME
 
 enum TinyGSMDateTimeFormat { DATE_FULL = 0, DATE_TIME = 1, DATE_DATE = 2 };
 
 template <class modemType>
-class TinyGsmTime {
+class SimpleWiFiTime {
  public:
   /*
    * Time functions
@@ -46,8 +46,8 @@ class TinyGsmTime {
    */
  protected:
   String getGSMDateTimeImpl(TinyGSMDateTimeFormat format) {
-    thisModem().sendAT(GF("+CCLK?"));
-    if (thisModem().waitResponse(2000L, GF("+CCLK: \"")) != 1) { return ""; }
+    thisModem().sendAT(F("+CCLK?"));
+    if (thisModem().waitResponse(2000L, F("+CCLK: \"")) != 1) { return ""; }
 
     String res;
 
@@ -65,8 +65,8 @@ class TinyGsmTime {
 
   bool getNetworkTimeImpl(int* year, int* month, int* day, int* hour,
                           int* minute, int* second, float* timezone) {
-    thisModem().sendAT(GF("+CCLK?"));
-    if (thisModem().waitResponse(2000L, GF("+CCLK: \"")) != 1) { return false; }
+    thisModem().sendAT(F("+CCLK?"));
+    if (thisModem().waitResponse(2000L, F("+CCLK: \"")) != 1) { return false; }
 
     int iyear     = 0;
     int imonth    = 0;
@@ -103,4 +103,4 @@ class TinyGsmTime {
   }
 };
 
-#endif  // SRC_TINYGSMTIME_H_
+#endif  // SRC_SIMPLEWIFITIME_H_

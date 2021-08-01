@@ -10,22 +10,22 @@
  **************************************************************/
 
 // Select your modem:
-#define TINY_GSM_MODEM_SIM800
-// #define TINY_GSM_MODEM_SIM900
-// #define TINY_GSM_MODEM_SIM808
-// #define TINY_GSM_MODEM_SIM868
-// #define TINY_GSM_MODEM_UBLOX
-// #define TINY_GSM_MODEM_M95
-// #define TINY_GSM_MODEM_BG96
-// #define TINY_GSM_MODEM_A6
-// #define TINY_GSM_MODEM_A7
-// #define TINY_GSM_MODEM_M590
-// #define TINY_GSM_MODEM_MC60
-// #define TINY_GSM_MODEM_MC60E
-// #define TINY_GSM_MODEM_ESP8266
-// #define TINY_GSM_MODEM_XBEE
+#define SIMPLE_WIFI_MODEM_SIM800
+// #define SIMPLE_WIFI_MODEM_SIM900
+// #define SIMPLE_WIFI_MODEM_SIM808
+// #define SIMPLE_WIFI_MODEM_SIM868
+// #define SIMPLE_WIFI_MODEM_UBLOX
+// #define SIMPLE_WIFI_MODEM_M95
+// #define SIMPLE_WIFI_MODEM_BG96
+// #define SIMPLE_WIFI_MODEM_A6
+// #define SIMPLE_WIFI_MODEM_A7
+// #define SIMPLE_WIFI_MODEM_M590
+// #define SIMPLE_WIFI_MODEM_MC60
+// #define SIMPLE_WIFI_MODEM_MC60E
+// #define SIMPLE_WIFI_MODEM_ESP8266
+// #define SIMPLE_WIFI_MODEM_XBEE
 
-#include <TinyGsmClient.h>
+#include <SimpleWiFiClient.h>
 
 // Set serial for debug console (to the Serial Monitor, speed 115200)
 #define SerialMon Serial
@@ -43,7 +43,7 @@ SoftwareSerial SerialAT(2, 3);  // RX, TX
 
 #include <StreamDebugger.h>
 StreamDebugger debugger(SerialAT, SerialMon);
-TinyGsm modem(debugger);
+SimpleWiFi modem(debugger);
 
 void setup() {
   // Set console baud rate

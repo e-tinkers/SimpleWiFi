@@ -1,11 +1,11 @@
-#ifndef TinyGsmFifo_h
-#define TinyGsmFifo_h
+#ifndef SimpleWiFiFifo_h
+#define SimpleWiFiFifo_h
 
 template <class T, unsigned N>
-class TinyGsmFifo
+class SimpleWiFiFifo
 {
 public:
-    TinyGsmFifo()
+    SimpleWiFiFifo()
     {
         clear();
     }

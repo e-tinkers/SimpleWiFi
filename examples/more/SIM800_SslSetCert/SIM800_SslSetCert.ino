@@ -8,7 +8,7 @@
  **************************************************************/
 
 // This example is specific to SIM8xx
-#define TINY_GSM_MODEM_SIM800
+#define SIMPLE_WIFI_MODEM_SIM800
 
 // Select your certificate:
 #include "DSTRootCAX3.h"
@@ -19,7 +19,7 @@
 // (the file is stored on the modem)
 #define CERT_FILE "C:\\USER\\CERT.CRT"
 
-#include <TinyGsmClient.h>
+#include <SimpleWiFiClient.h>
 
 // Set serial for debug console (to the Serial Monitor, speed 115200)
 #define SerialMon Serial
@@ -34,9 +34,9 @@
 #ifdef DUMP_AT_COMMANDS
   #include <StreamDebugger.h>
   StreamDebugger debugger(SerialAT, SerialMon);
-  TinyGsm modem(debugger);
+  SimpleWiFi modem(debugger);
 #else
-  TinyGsm modem(SerialAT);
+  SimpleWiFi modem(SerialAT);
 #endif
 
 void setup() {
@@ -51,13 +51,13 @@ void setup() {
   SerialMon.println(F("Initializing modem..."));
   modem.init();
 
-  modem.sendAT(GF("+FSCREATE=" CERT_FILE));
+  modem.sendAT(F("+FSCREATE=" CERT_FILE));
   if (modem.waitResponse() != 1) return;
 
   const int cert_size = sizeof(cert);
 
-  modem.sendAT(GF("+FSWRITE=" CERT_FILE ",0,"), cert_size, GF(",10"));
-  if (modem.waitResponse(GF(">")) != 1) {
+  modem.sendAT(F("+FSWRITE=" CERT_FILE ",0,"), cert_size, F(",10"));
+  if (modem.waitResponse(F(">")) != 1) {
     return;
   }
 
@@ -66,14 +66,14 @@ void setup() {
     modem.stream.write(c);
   }
 
-  modem.stream.write(GSM_NL);
+  modem.stream.write(CRLF);
   modem.stream.flush();
 
   if (modem.waitResponse(2000) != 1) return;
 
-  modem.sendAT(GF("+SSLSETCERT=\"" CERT_FILE "\""));
+  modem.sendAT(F("+SSLSETCERT=\"" CERT_FILE "\""));
   if (modem.waitResponse() != 1) return;
-  if (modem.waitResponse(5000L, GF(GSM_NL "+SSLSETCERT:")) != 1) return;
+  if (modem.waitResponse(5000L, F(CRLF "+SSLSETCERT:")) != 1) return;
   const int retCode = modem.stream.readStringUntil('\n').toInt();
 
 

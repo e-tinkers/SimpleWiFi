@@ -9,14 +9,14 @@
  **************************************************************/
 
 // Hologram Dash uses UBLOX U2 modems
-#define TINY_GSM_MODEM_UBLOX
+#define SIMPLE_WIFI_MODEM_UBLOX
 
 // Increase RX buffer if needed
-#if !defined(TINY_GSM_RX_BUFFER)
-#define TINY_GSM_RX_BUFFER 512
+#if !defined(SIMPLE_WIFI_RX_BUFFER)
+#define SIMPLE_WIFI_RX_BUFFER 512
 #endif
 
-#include <TinyGsmClient.h>
+#include <SimpleWiFiClient.h>
 
 // Uncomment this if you want to see all AT commands
 // #define DUMP_AT_COMMANDS
@@ -43,16 +43,16 @@ const char resource[] = "/TinyGSM/logo.txt";
 #ifdef DUMP_AT_COMMANDS
   #include <StreamDebugger.h>
   StreamDebugger debugger(SerialAT, SerialMon);
-  TinyGsm mdm(debugger);
+  SimpleWiFi mdm(debugger);
 #else
-  TinyGsm mdm(SerialAT);
+  SimpleWiFi mdm(SerialAT);
 #endif
 
 #ifdef USE_SSL
-  TinyGsmClientSecure client(mdm);
+  SimpleWiFiClientSecure client(mdm);
   const int  port = 443;
 #else
-  TinyGsmClient client(mdm);
+  SimpleWiFiClient client(mdm);
   const int  port = 80;
 #endif
 

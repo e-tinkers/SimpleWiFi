@@ -1,6 +1,6 @@
-#ifndef TINYGSM_H
-#define TINYGSM_H
+#ifndef SIMPLEWIFI_H
+#define SIMPLEWIFI_H
 
-#include "TinyGsmClient.h"
+#include "SimpleWiFiClient.h"
 
 #endif

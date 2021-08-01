@@ -1,38 +1,38 @@
 /**
- * @file       TinyGsmClientXBee.h
- * @author     Volodymyr Shymanskyy
+ * @file       SimpleWiFiClientXBee.h
+ * @author     Henry Cheung
  * @license    LGPL-3.0
- * @copyright  Copyright (c) 2016 Volodymyr Shymanskyy, XBee module by Sara
- * Damiano
- * @date       Nov 2016
+ * @copyright  Copyright (c) 2016 TinyGSM - Volodymyr Shymanskyy
+ * @copyright  Copyright (c) 2021 SimpleWiFi - Henry Cheung
+ * @date       July 2021
  */
 
-#ifndef SRC_TINYGSMCLIENTXBEE_H_
-#define SRC_TINYGSMCLIENTXBEE_H_
-// #pragma message("TinyGSM:  TinyGsmClientXBee")
+#ifndef SRC_SIMPLEWIFICLIENTXBEE_H_
+#define SRC_SIMPLEWIFICLIENTXBEE_H_
+// #pragma message("TinyGSM:  SimpleWiFiClientXBee")
 
-// #define TINY_GSM_DEBUG Serial
+// #define SIMPLE_WIFI_DEBUG Serial
 
 // XBee's do not support multi-plexing in transparent/command mode
 // The much more complicated API mode is needed for multi-plexing
-#define TINY_GSM_MUX_COUNT 1
-#define TINY_GSM_NO_MODEM_BUFFER
+#define SIMPLE_WIFI_MUX_COUNT 1
+#define SIMPLE_WIFI_NO_MODEM_BUFFER
 // XBee's have a default guard time of 1 second (1000ms, 10 extra for safety
 // here)
-#define TINY_GSM_XBEE_GUARD_TIME 1010
+#define SIMPLE_WIFI_XBEE_GUARD_TIME 1010
 
-#include "TinyGsmBattery.tpp"
-#include "TinyGsmGPRS.tpp"
-#include "TinyGsmModem.tpp"
-#include "TinyGsmSMS.tpp"
-#include "TinyGsmSSL.tpp"
-#include "TinyGsmTCP.tpp"
-#include "TinyGsmTemperature.tpp"
-#include "TinyGsmWifi.tpp"
+#include "SimpleWiFiBattery.tpp"
+//#include "SimpleWiFiGPRS.tpp"
+#include "SimpleWiFiModem.tpp"
+//#include "SimpleWiFiSMS.tpp"
+#include "SimpleWiFiSSL.tpp"
+#include "SimpleWiFiTCP.tpp"
+#include "SimpleWiFiTemperature.tpp"
+#include "SimpleWiFiWifi.tpp"
 
-#define GSM_NL "\r"
-static const char GSM_OK[] TINY_GSM_PROGMEM    = "OK" GSM_NL;
-static const char GSM_ERROR[] TINY_GSM_PROGMEM = "ERROR" GSM_NL;
+#define CRLF "\r"
+static const char GSM_OK[] SIMPLE_WIFI_PROGMEM    = "OK" CRLF;
+static const char GSM_ERROR[] SIMPLE_WIFI_PROGMEM = "ERROR" CRLF;
 
 // Use this to avoid too many entrances and exits from command mode.
 // The cellular Bee's often freeze up and won't respond when attempting
@@ -66,38 +66,38 @@ enum XBeeType {
   XBEE3_LTEM_ATT = 0xB08,  // Digi XBee3 Cellular LTE-M
 };
 
-class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
-                    public TinyGsmGPRS<TinyGsmXBee>,
-                    public TinyGsmWifi<TinyGsmXBee>,
-                    public TinyGsmTCP<TinyGsmXBee, TINY_GSM_MUX_COUNT>,
-                    public TinyGsmSSL<TinyGsmXBee>,
-                    public TinyGsmSMS<TinyGsmXBee>,
-                    public TinyGsmBattery<TinyGsmXBee>,
-                    public TinyGsmTemperature<TinyGsmXBee> {
-  friend class TinyGsmModem<TinyGsmXBee>;
-  friend class TinyGsmGPRS<TinyGsmXBee>;
-  friend class TinyGsmWifi<TinyGsmXBee>;
-  friend class TinyGsmTCP<TinyGsmXBee, TINY_GSM_MUX_COUNT>;
-  friend class TinyGsmSSL<TinyGsmXBee>;
-  friend class TinyGsmSMS<TinyGsmXBee>;
-  friend class TinyGsmBattery<TinyGsmXBee>;
-  friend class TinyGsmTemperature<TinyGsmXBee>;
+class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
+                    public SimpleWiFiGPRS<SimpleWiFiXBee>,
+                    public SimpleWiFiWifi<SimpleWiFiXBee>,
+                    public SimpleWiFiTCP<SimpleWiFiXBee, SIMPLE_WIFI_MUX_COUNT>,
+                    public SimpleWiFiSSL<SimpleWiFiXBee>,
+                    public SimpleWiFiSMS<SimpleWiFiXBee>,
+                    public SimpleWiFiBattery<SimpleWiFiXBee>,
+                    public SimpleWiFiTemperature<SimpleWiFiXBee> {
+  friend class SimpleWiFiModem<SimpleWiFiXBee>;
+  friend class SimpleWiFiGPRS<SimpleWiFiXBee>;
+  friend class SimpleWiFiWifi<SimpleWiFiXBee>;
+  friend class SimpleWiFiTCP<SimpleWiFiXBee, SIMPLE_WIFI_MUX_COUNT>;
+  friend class SimpleWiFiSSL<SimpleWiFiXBee>;
+  friend class SimpleWiFiSMS<SimpleWiFiXBee>;
+  friend class SimpleWiFiBattery<SimpleWiFiXBee>;
+  friend class SimpleWiFiTemperature<SimpleWiFiXBee>;
 
   /*
    * Inner Client
    */
  public:
   class GsmClientXBee : public GsmClient {
-    friend class TinyGsmXBee;
+    friend class SimpleWiFiXBee;
 
    public:
     GsmClientXBee() {}
 
-    explicit GsmClientXBee(TinyGsmXBee& modem, uint8_t mux = 0) {
+    explicit GsmClientXBee(SimpleWiFiXBee& modem, uint8_t mux = 0) {
       init(&modem, mux);
     }
 
-    bool init(TinyGsmXBee* modem, uint8_t = 0) {
+    bool init(SimpleWiFiXBee* modem, uint8_t = 0) {
       this->at       = modem;
       this->mux      = 0;
       sock_connected = false;
@@ -155,7 +155,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     }
 
     size_t write(const uint8_t* buf, size_t size) override {
-      TINY_GSM_YIELD();
+      SIMPLE_WIFI_YIELD();
       return at->modemSend(buf, size, mux);
     }
 
@@ -169,7 +169,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     }
 
     int available() override {
-      TINY_GSM_YIELD();
+      SIMPLE_WIFI_YIELD();
       return at->stream.available();
       /*
       if (!rx.size() || at->stream.available()) {
@@ -180,13 +180,13 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     }
 
     int read(uint8_t* buf, size_t size) override {
-      TINY_GSM_YIELD();
+      SIMPLE_WIFI_YIELD();
       return at->stream.readBytes(reinterpret_cast<char*>(buf), size);
       /*
       size_t cnt = 0;
       uint32_t _startMillis = millis();
       while (cnt < size && millis() - _startMillis < _timeout) {
-        size_t chunk = TinyGsmMin(size-cnt, rx.size());
+        size_t chunk = SimpleWiFiMin(size-cnt, rx.size());
         if (chunk > 0) {
           rx.get(buf, chunk);
           buf += chunk;
@@ -203,7 +203,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     }
 
     int read() override {
-      TINY_GSM_YIELD();
+      SIMPLE_WIFI_YIELD();
       return at->stream.read();
       /*
       uint8_t c;
@@ -242,7 +242,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
      * Extended API
      */
 
-    String remoteIP() TINY_GSM_ATTR_NOT_IMPLEMENTED;
+    String remoteIP() SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
   };
 
   /*
@@ -253,7 +253,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
    public:
     GsmClientSecureXBee() {}
 
-    explicit GsmClientSecureXBee(TinyGsmXBee& modem, uint8_t mux = 0)
+    explicit GsmClientSecureXBee(SimpleWiFiXBee& modem, uint8_t mux = 0)
         : GsmClientXBee(modem, mux) {}
 
    public:
@@ -285,9 +285,9 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
    * Constructor
    */
  public:
-  explicit TinyGsmXBee(Stream& stream)
+  explicit SimpleWiFiXBee(Stream& stream)
       : stream(stream),
-        guardTime(TINY_GSM_XBEE_GUARD_TIME),
+        guardTime(SIMPLE_WIFI_XBEE_GUARD_TIME),
         beeType(XBEE_UNKNOWN),
         resetPin(-1),
         savedIP(IPAddress(0, 0, 0, 0)),
@@ -301,9 +301,9 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     memset(sockets, 0, sizeof(sockets));
   }
 
-  TinyGsmXBee(Stream& stream, int8_t resetPin)
+  SimpleWiFiXBee(Stream& stream, int8_t resetPin)
       : stream(stream),
-        guardTime(TINY_GSM_XBEE_GUARD_TIME),
+        guardTime(SIMPLE_WIFI_XBEE_GUARD_TIME),
         beeType(XBEE_UNKNOWN),
         resetPin(resetPin),
         savedIP(IPAddress(0, 0, 0, 0)),
@@ -321,8 +321,8 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
    */
 
   bool initImpl(const char* pin = NULL) {
-    DBG(GF("### TinyGSM Version:"), TINYGSM_VERSION);
-    DBG(GF("### TinyGSM Compiled Module:  TinyGsmClientXBee"));
+    DBG(F("### TinyGSM Version:"), SIMPLEWIFI_VERSION);
+    DBG(F("### TinyGSM Compiled Module:  SimpleWiFiClientXBee"));
 
     if (resetPin >= 0) {
       pinMode(resetPin, OUTPUT);
@@ -336,7 +336,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
 
     // if there's a pin, we need to re-write to flash each time
     if (pin && strlen(pin) > 0) {
-      sendAT(GF("PN"), pin);
+      sendAT(F("PN"), pin);
       if (waitResponse() != 1) {
         ret_val = false;
       } else {
@@ -345,12 +345,12 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     }
 
     // Put in transparent mode, if it isn't already
-    changesMade |= changeSettingIfNeeded(GF("AP"), 0x0);
+    changesMade |= changeSettingIfNeeded(F("AP"), 0x0);
 
     // shorten the guard time to 100ms, if it was anything else
-    sendAT(GF("GT"));
+    sendAT(F("GT"));
     if (readResponseInt() != 0x64) {
-      sendAT(GF("GT"), 64);
+      sendAT(F("GT"), 64);
       ret_val &= waitResponse() == 1;
       if (ret_val) {
         guardTime   = 110;
@@ -363,7 +363,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     // Make sure the command mode drop-out time is long enough that we won't
     // fall out of command mode without intentionally leaving it.  This is the
     // default drop out time of 0x64 x 100ms (10 seconds)
-    changesMade |= changeSettingIfNeeded(GF("CT"), 0x64);
+    changesMade |= changeSettingIfNeeded(F("CT"), 0x64);
 
     if (changesMade) { ret_val &= writeChanges(); }
 
@@ -382,19 +382,19 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     XBEE_COMMAND_START_DECORATOR(5, )
     bool changesMade = false;
     switch (baud) {
-      case 2400: changesMade |= changeSettingIfNeeded(GF("BD"), 0x1); break;
-      case 4800: changesMade |= changeSettingIfNeeded(GF("BD"), 0x2); break;
-      case 9600: changesMade |= changeSettingIfNeeded(GF("BD"), 0x3); break;
-      case 19200: changesMade |= changeSettingIfNeeded(GF("BD"), 0x4); break;
-      case 38400: changesMade |= changeSettingIfNeeded(GF("BD"), 0x5); break;
-      case 57600: changesMade |= changeSettingIfNeeded(GF("BD"), 0x6); break;
-      case 115200: changesMade |= changeSettingIfNeeded(GF("BD"), 0x7); break;
-      case 230400: changesMade |= changeSettingIfNeeded(GF("BD"), 0x8); break;
-      case 460800: changesMade |= changeSettingIfNeeded(GF("BD"), 0x9); break;
-      case 921600: changesMade |= changeSettingIfNeeded(GF("BD"), 0xA); break;
+      case 2400: changesMade |= changeSettingIfNeeded(F("BD"), 0x1); break;
+      case 4800: changesMade |= changeSettingIfNeeded(F("BD"), 0x2); break;
+      case 9600: changesMade |= changeSettingIfNeeded(F("BD"), 0x3); break;
+      case 19200: changesMade |= changeSettingIfNeeded(F("BD"), 0x4); break;
+      case 38400: changesMade |= changeSettingIfNeeded(F("BD"), 0x5); break;
+      case 57600: changesMade |= changeSettingIfNeeded(F("BD"), 0x6); break;
+      case 115200: changesMade |= changeSettingIfNeeded(F("BD"), 0x7); break;
+      case 230400: changesMade |= changeSettingIfNeeded(F("BD"), 0x8); break;
+      case 460800: changesMade |= changeSettingIfNeeded(F("BD"), 0x9); break;
+      case 921600: changesMade |= changeSettingIfNeeded(F("BD"), 0xA); break;
       default: {
-        DBG(GF("Specified baud rate is unsupported! Setting to 9600 baud."));
-        changesMade |= changeSettingIfNeeded(GF("BD"),
+        DBG(F("Specified baud rate is unsupported! Setting to 9600 baud."));
+        changesMade |= changeSettingIfNeeded(F("BD"),
                                              0x3);  // Set to default of 9600
         break;
       }
@@ -427,7 +427,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   void maintainImpl() {
     // this only happens OUTSIDE command mode, so if we're getting characters
     // they should be data received from the TCP connection
-    // TINY_GSM_YIELD();
+    // SIMPLE_WIFI_YIELD();
     // if (!inCommandMode) {
     //   while (stream.available()) {
     //     char c = stream.read();
@@ -438,7 +438,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
 
   bool factoryDefaultImpl() {
     XBEE_COMMAND_START_DECORATOR(5, false)
-    sendAT(GF("RE"));
+    sendAT(F("RE"));
     bool ret_val = waitResponse() == 1;
     ret_val &= writeChanges();
     XBEE_COMMAND_END_DECORATOR
@@ -449,7 +449,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   }
 
   String getModemInfoImpl() {
-    return sendATGetString(GF("HS"));
+    return sendATGetString(F("HS"));
   }
 
   /*
@@ -512,14 +512,14 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     if (beeType == XBEE_UNKNOWN) getSeries();  // how we restart depends on this
 
     if (beeType != XBEE_S6B_WIFI) {
-      sendAT(GF("AM1"));  // Digi suggests putting cellular modules into
+      sendAT(F("AM1"));  // Digi suggests putting cellular modules into
                           // airplane mode before restarting This allows the
                           // sockets and connections to close cleanly
       if (waitResponse() != 1) return exitAndFail();
       if (!writeChanges()) return exitAndFail();
     }
 
-    sendAT(GF("FR"));
+    sendAT(F("FR"));
     if (waitResponse() != 1)
       return exitAndFail();
     else
@@ -537,7 +537,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     }
 
     if (beeType != XBEE_S6B_WIFI) {
-      sendAT(GF("AM0"));  // Turn off airplane mode
+      sendAT(F("AM0"));  // Turn off airplane mode
       if (waitResponse() != 1) return exitAndFail();
       if (!writeChanges()) return exitAndFail();
     }
@@ -555,15 +555,15 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     bool changesMade = false;
 
     // Pin sleep
-    changesMade |= changeSettingIfNeeded(GF("SM"), 0x1);
+    changesMade |= changeSettingIfNeeded(F("SM"), 0x1);
 
     if (beeType == XBEE_S6B_WIFI && !maintainAssociation) {
       // For lowest power, dissassociated deep sleep
-      changesMade |= changeSettingIfNeeded(GF("SO"), 0x200);
+      changesMade |= changeSettingIfNeeded(F("SO"), 0x200);
     } else if (!maintainAssociation) {
       // For supported cellular modules, maintain association
       // Not supported by all modules, will return "ERROR"
-      changesMade |= changeSettingIfNeeded(GF("SO"), 0x1);
+      changesMade |= changeSettingIfNeeded(F("SO"), 0x1);
     }
 
     if (changesMade) { writeChanges(); }
@@ -573,10 +573,10 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   bool
   powerOffImpl() {  // NOTE:  Not supported for WiFi or older cellular firmware
     XBEE_COMMAND_START_DECORATOR(5, false)
-    sendAT(GF("SD"));
+    sendAT(F("SD"));
     bool ret_val = waitResponse(120000L) == 1;
     // make sure we're really shut down
-    if (ret_val) { ret_val &= (sendATGetString(GF("AI")) == "2D"); }
+    if (ret_val) { ret_val &= (sendATGetString(F("AI")) == "2D"); }
     XBEE_COMMAND_END_DECORATOR
     return ret_val;
   }
@@ -586,16 +586,16 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     bool success     = true;
     bool changesMade = false;
     XBEE_COMMAND_START_DECORATOR(5, false)
-    changesMade = changeSettingIfNeeded(GF("AM"), 0x1, 5000L);
+    changesMade = changeSettingIfNeeded(F("AM"), 0x1, 5000L);
     if (changesMade) { success = writeChanges(); }
     XBEE_COMMAND_END_DECORATOR
     return success;
   }
 
-  bool sleepEnableImpl(bool enable = true) TINY_GSM_ATTR_NOT_IMPLEMENTED;
+  bool sleepEnableImpl(bool enable = true) SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
 
   bool setPhoneFunctionalityImpl(uint8_t fun, bool reset = false)
-      TINY_GSM_ATTR_NOT_IMPLEMENTED;
+      SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
 
   /*
    * Generic network functions
@@ -609,7 +609,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     if (beeType == XBEE_UNKNOWN)
       getSeries();  // Need to know the bee type to interpret response
 
-    sendAT(GF("AI"));
+    sendAT(F("AI"));
     int16_t   intRes = readResponseInt(10000L);
     RegStatus stat   = REG_UNKNOWN;
 
@@ -669,13 +669,13 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
             stat = REG_DENIED;
             break;
           case 0x2A:            // 0x2A Airplane mode.
-            sendAT(GF("AM0"));  // Turn off airplane mode
+            sendAT(F("AM0"));  // Turn off airplane mode
             waitResponse();
             writeChanges();
             stat = REG_UNKNOWN;
             break;
           case 0x2F:            // 0x2F Bypass mode active.
-            sendAT(GF("AP0"));  // Set back to transparent mode
+            sendAT(F("AP0"));  // Set back to transparent mode
             waitResponse();
             writeChanges();
             stat = REG_UNKNOWN;
@@ -698,9 +698,9 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
       getSeries();  // Need to know what type of bee so we know how to ask
 
     if (beeType == XBEE_S6B_WIFI)
-      sendAT(GF("LM"));  // ask for the "link margin" - the dB above sensitivity
+      sendAT(F("LM"));  // ask for the "link margin" - the dB above sensitivity
     else
-      sendAT(GF("DB"));  // ask for the cell strength in dBm
+      sendAT(F("DB"));  // ask for the cell strength in dBm
     int16_t intRes = readResponseInt();
 
     XBEE_COMMAND_END_DECORATOR
@@ -751,7 +751,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
 
   String getLocalIPImpl() {
     XBEE_COMMAND_START_DECORATOR(5, "")
-    sendAT(GF("MY"));
+    sendAT(F("MY"));
     String IPaddr;
     IPaddr.reserve(16);
     // wait for the response - this response can be very slow
@@ -773,23 +773,23 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
 
     if (ssid == NULL) retVal = false;
 
-    changesMade |= changeSettingIfNeeded(GF("ID"), ssid);
+    changesMade |= changeSettingIfNeeded(F("ID"), ssid);
 
     if (pwd && strlen(pwd) > 0) {
       // Set security to WPA2
-      changesMade |= changeSettingIfNeeded(GF("EE"), 0x2);
+      changesMade |= changeSettingIfNeeded(F("EE"), 0x2);
       // set the password
       // the wifi bee will NOT return the previously set password,
       // so we have no way of knowing if the passwords has changed
       // and must re-write to flash each time
-      sendAT(GF("PK"), pwd);
+      sendAT(F("PK"), pwd);
       if (waitResponse() != 1) {
         retVal = false;
       } else {
         changesMade = true;
       }
     } else {
-      changesMade |= changeSettingIfNeeded(GF("EE"), 0x0);  // Set No security
+      changesMade |= changeSettingIfNeeded(F("EE"), 0x0);  // Set No security
     }
 
     if (changesMade) { retVal &= writeChanges(); }
@@ -801,7 +801,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
 
   bool networkDisconnectImpl() {
     XBEE_COMMAND_START_DECORATOR(5, false)
-    sendAT(GF("NR0"));  // Do a network reset in order to disconnect
+    sendAT(F("NR0"));  // Do a network reset in order to disconnect
     // WARNING:  On wifi modules, using a network reset will not
     // allow the same ssid to re-join without rebooting the module.
     int8_t res = (1 == waitResponse(5000));
@@ -824,7 +824,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     // password, so we have no way of knowing if they have changed
     // and must re-write to flash each time
     if (user && strlen(user) > 0) {
-      sendAT(GF("CU"), user);  // Set the user for the APN
+      sendAT(F("CU"), user);  // Set the user for the APN
       if (waitResponse() != 1) {
         success = false;
       } else {
@@ -832,16 +832,16 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
       }
     }
     if (pwd && strlen(pwd) > 0) {
-      sendAT(GF("CW"), pwd);  // Set the password for the APN
+      sendAT(F("CW"), pwd);  // Set the password for the APN
       if (waitResponse() != 1) {
         success = false;
       } else {
         changesMade = true;
       }
     }
-    changesMade |= changeSettingIfNeeded(GF("AN"), String(apn));  // Set the APN
+    changesMade |= changeSettingIfNeeded(F("AN"), String(apn));  // Set the APN
 
-    changesMade |= changeSettingIfNeeded(GF("AM"), 0x0,
+    changesMade |= changeSettingIfNeeded(F("AM"), 0x0,
                                          5000L);  // Airplane mode off
 
     if (changesMade) { success = writeChanges(); }
@@ -853,7 +853,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     bool success = true;
     XBEE_COMMAND_START_DECORATOR(5, false)
     // Cheating and disconnecting by turning on airplane mode
-    bool changesMade = changeSettingIfNeeded(GF("AM"), 0x1, 5000L);
+    bool changesMade = changeSettingIfNeeded(F("AM"), 0x1, 5000L);
 
     if (changesMade) { success = writeChanges(); }
     XBEE_COMMAND_END_DECORATOR
@@ -865,7 +865,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   }
 
   String getOperatorImpl() {
-    return sendATGetString(GF("MN"));
+    return sendATGetString(F("MN"));
   }
 
   /*
@@ -874,22 +874,22 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
  protected:
   bool simUnlockImpl(const char* pin) {
     if (pin && strlen(pin) > 0) {
-      sendAT(GF("PN"), pin);
+      sendAT(F("PN"), pin);
       return waitResponse() == 1;
     }
     return false;
   }
 
   String getSimCCIDImpl() {
-    return sendATGetString(GF("S#"));
+    return sendATGetString(F("S#"));
   }
 
   String getIMEIImpl() {
-    return sendATGetString(GF("IM"));
+    return sendATGetString(F("IM"));
   }
 
   String getIMSIImpl() {
-    return sendATGetString(GF("II"));
+    return sendATGetString(F("II"));
   }
 
   SimStatus getSimStatusImpl(uint32_t) {
@@ -900,15 +900,15 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
    * Messaging functions
    */
  protected:
-  String sendUSSDImpl(const String& code) TINY_GSM_ATTR_NOT_AVAILABLE;
+  String sendUSSDImpl(const String& code) SIMPLE_WIFI_ATTR_NOT_AVAILABLE;
 
   bool sendSMSImpl(const String& number, const String& text) {
     bool changesMade = false;
     if (!commandMode()) { return false; }  // Return immediately
 
-    sendAT(GF("IP"));  // check mode
+    sendAT(F("IP"));  // check mode
     if (readResponseInt() != 2) {
-      sendAT(GF("IP"), 2);  // Put in text messaging mode
+      sendAT(F("IP"), 2);  // Put in text messaging mode
       if (waitResponse() != 1) {
         return exitAndFail();
       } else {
@@ -916,9 +916,9 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
       }
     }
 
-    sendAT(GF("PH"));  // check last number
+    sendAT(F("PH"));  // check last number
     if (readResponseString() != String(number)) {
-      sendAT(GF("PH"), number);  // Set the phone number
+      sendAT(F("PH"), number);  // Set the phone number
       if (waitResponse() != 1) {
         return exitAndFail();
       } else {
@@ -926,9 +926,9 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
       }
     }
 
-    sendAT(GF("TD"));  // check the text delimiter
+    sendAT(F("TD"));  // check the text delimiter
     if (readResponseString() != String("D")) {
-      sendAT(GF("TDD"));  // Set the text delimiter to the standard 0x0D
+      sendAT(F("TDD"));  // Set the text delimiter to the standard 0x0D
                           //(carriage return)
       if (waitResponse() != 1) {
         return exitAndFail();
@@ -960,15 +960,15 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     XBEE_COMMAND_START_DECORATOR(5, false)
     if (beeType == XBEE_UNKNOWN) getSeries();
     if (beeType == XBEE_S6B_WIFI) {
-      sendAT(GF("%V"));
+      sendAT(F("%V"));
       intRes = readResponseInt();
     }
     XBEE_COMMAND_END_DECORATOR
     return intRes;
   }
 
-  int8_t  getBattPercentImpl() TINY_GSM_ATTR_NOT_AVAILABLE;
-  uint8_t getBattChargeStateImpl() TINY_GSM_ATTR_NOT_AVAILABLE;
+  int8_t  getBattPercentImpl() SIMPLE_WIFI_ATTR_NOT_AVAILABLE;
+  uint8_t getBattChargeStateImpl() SIMPLE_WIFI_ATTR_NOT_AVAILABLE;
 
   bool getBattStatsImpl(uint8_t& chargeState, int8_t& percent,
                         uint16_t& milliVolts) {
@@ -984,7 +984,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
 
   float getTemperatureImpl() {
     XBEE_COMMAND_START_DECORATOR(5, static_cast<float>(-9999))
-    String res = sendATGetString(GF("TP"));
+    String res = sendATGetString(F("TP"));
     if (res == "") { return static_cast<float>(-9999); }
     char buf[5] = {
         0,
@@ -1003,7 +1003,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
  protected:
   int16_t getConnectionIndicator() {
     XBEE_COMMAND_START_DECORATOR(5, false)
-    sendAT(GF("CI"));
+    sendAT(F("CI"));
     int16_t intRes = readResponseInt();
     XBEE_COMMAND_END_DECORATOR
     return intRes;
@@ -1014,13 +1014,13 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     strIP.reserve(16);
 
     XBEE_COMMAND_START_DECORATOR(5, IPAddress(0, 0, 0, 0))
-    sendAT(GF("OD"));
+    sendAT(F("OD"));
     strIP = stream.readStringUntil('\r');  // read result
     strIP.trim();
     XBEE_COMMAND_END_DECORATOR
 
-    if (strIP != "" && strIP != GF("ERROR")) {
-      return TinyGsmIpFromString(strIP);
+    if (strIP != "" && strIP != F("ERROR")) {
+      return SimpleWiFiIpFromString(strIP);
     } else {
       return IPAddress(0, 0, 0, 0);
     }
@@ -1038,13 +1038,13 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     // name
     // NOTE: the lookup can take a while
     while ((millis() - startMillis) < timeout_ms) {
-      sendAT(GF("LA"), host);
+      sendAT(F("LA"), host);
       while (stream.available() < 4 && (millis() - startMillis < timeout_ms)) {
-        TINY_GSM_YIELD()
+        SIMPLE_WIFI_YIELD()
       }
       strIP = stream.readStringUntil('\r');  // read result
       strIP.trim();
-      if (strIP != "" && strIP != GF("ERROR")) {
+      if (strIP != "" && strIP != F("ERROR")) {
         gotIP = true;
         break;
       }
@@ -1054,7 +1054,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     XBEE_COMMAND_END_DECORATOR
 
     if (gotIP) {
-      return TinyGsmIpFromString(strIP);
+      return SimpleWiFiIpFromString(strIP);
     } else {
       return IPAddress(0, 0, 0, 0);
     }
@@ -1118,16 +1118,16 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
 
       if (ssl) {
         // Put in SSL over TCP communication mode
-        changesMade |= changeSettingIfNeeded(GF("IP"), 0x4);
+        changesMade |= changeSettingIfNeeded(F("IP"), 0x4);
       } else {
         // Put in TCP mode
-        changesMade |= changeSettingIfNeeded(GF("IP"), 0x1);
+        changesMade |= changeSettingIfNeeded(F("IP"), 0x1);
       }
 
       changesMade |= changeSettingIfNeeded(
-          GF("DL"), String(host));  // Set the "Destination Address Low"
+          F("DL"), String(host));  // Set the "Destination Address Low"
       changesMade |= changeSettingIfNeeded(
-          GF("DE"), String(port, HEX));  // Set the destination port
+          F("DE"), String(port, HEX));  // Set the destination port
 
       if (changesMade) { success &= writeChanges(); }
     }
@@ -1153,13 +1153,13 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     XBEE_COMMAND_START_DECORATOR(5, false)
 
     // Get the current socket timeout
-    sendAT(GF("TM"));
+    sendAT(F("TM"));
     String timeoutUsed = readResponseString(5000L);
 
     // For WiFi models, there's no direct way to close the socket.  This is a
     // hack to shut the socket by setting the timeout to zero.
     if (beeType == XBEE_S6B_WIFI) {
-      sendAT(GF("TM0"));        // Set socket timeout to 0
+      sendAT(F("TM0"));        // Set socket timeout to 0
       waitResponse(maxWaitMs);  // This response can be slow
       writeChanges();
     }
@@ -1167,7 +1167,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     // For cellular models, per documentation: If you write the TM (socket
     // timeout) value while in Transparent Mode, the current connection is
     // immediately closed - this works even if the TM values is unchanged
-    sendAT(GF("TM"), timeoutUsed);  // Re-set socket timeout
+    sendAT(F("TM"), timeoutUsed);  // Re-set socket timeout
     waitResponse(maxWaitMs);        // This response can be slow
     writeChanges();
 
@@ -1268,13 +1268,13 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
             }
 
             // // Ask for information about any open sockets
-            // sendAT(GF("SI"));
+            // sendAT(F("SI"));
             // String open_socks = stream.readStringUntil('\r');
-            // open_socks.replace(GSM_NL, "");
+            // open_socks.replace(CRLF, "");
             // open_socks.trim();
             // if (open_socks != "") {
             //   // In transparent mode, only socket 0 should be possible
-            //   sendAT(GF("SI0"));
+            //   sendAT(F("SI0"));
             //   // read socket it
             //   String sock_id = stream.readStringUntil('\r');
             //   // read socket state
@@ -1298,9 +1298,9 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
           // we force close so it can reopen
           case 0x21:
           case 0x27: {
-            sendAT(GF("TM"));  // Get socket timeout
+            sendAT(F("TM"));  // Get socket timeout
             String timeoutUsed = readResponseString(5000L);
-            sendAT(GF("TM"), timeoutUsed);  // Re-set socket timeout
+            sendAT(F("TM"), timeoutUsed);  // Re-set socket timeout
             waitResponse(5000L);            // This response can be slow
           }
 
@@ -1334,7 +1334,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   void streamClear(void) {
     while (stream.available()) {
       stream.read();
-      TINY_GSM_YIELD();
+      SIMPLE_WIFI_YIELD();
     }
   }
 
@@ -1343,9 +1343,9 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   // waiting for requested responses.  The XBee has no unsoliliced responses
   // (URC's) when in command mode.
   int8_t waitResponse(uint32_t timeout_ms, String& data,
-                      GsmConstStr r1 = GFP(GSM_OK),
-                      GsmConstStr r2 = GFP(GSM_ERROR), GsmConstStr r3 = NULL,
-                      GsmConstStr r4 = NULL, GsmConstStr r5 = NULL) {
+                      __FlashStringHelper* r1 = GFP(GSM_OK),
+                      __FlashStringHelper* r2 = GFP(GSM_ERROR), __FlashStringHelper* r3 = NULL,
+                      __FlashStringHelper* r4 = NULL, __FlashStringHelper* r5 = NULL) {
     /*String r1s(r1); r1s.trim();
     String r2s(r2); r2s.trim();
     String r3s(r3); r3s.trim();
@@ -1356,9 +1356,9 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     int8_t   index       = 0;
     uint32_t startMillis = millis();
     do {
-      TINY_GSM_YIELD();
+      SIMPLE_WIFI_YIELD();
       while (stream.available() > 0) {
-        TINY_GSM_YIELD();
+        SIMPLE_WIFI_YIELD();
         int8_t a = stream.read();
         if (a <= 0) continue;  // Skip 0x00 bytes, just in case
         data += static_cast<char>(a);
@@ -1383,8 +1383,8 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   finish:
     if (!index) {
       data.trim();
-      data.replace(GSM_NL GSM_NL, GSM_NL);
-      data.replace(GSM_NL, "\r\n    ");
+      data.replace(CRLF CRLF, CRLF);
+      data.replace(CRLF, "\r\n    ");
       if (data.length()) {
         DBG("### Unhandled:", data, "\r\n");
       } else {
@@ -1392,24 +1392,24 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
       }
     } else {
       data.trim();
-      data.replace(GSM_NL GSM_NL, GSM_NL);
-      data.replace(GSM_NL, "\r\n    ");
+      data.replace(CRLF CRLF, CRLF);
+      data.replace(CRLF, "\r\n    ");
     }
-    // data.replace(GSM_NL, "/");
+    // data.replace(CRLF, "/");
     // DBG('<', index, '>', data);
     return index;
   }
 
-  int8_t waitResponse(uint32_t timeout_ms, GsmConstStr r1 = GFP(GSM_OK),
-                      GsmConstStr r2 = GFP(GSM_ERROR), GsmConstStr r3 = NULL,
-                      GsmConstStr r4 = NULL, GsmConstStr r5 = NULL) {
+  int8_t waitResponse(uint32_t timeout_ms, __FlashStringHelper* r1 = GFP(GSM_OK),
+                      __FlashStringHelper* r2 = GFP(GSM_ERROR), __FlashStringHelper* r3 = NULL,
+                      __FlashStringHelper* r4 = NULL, __FlashStringHelper* r5 = NULL) {
     String data;
     return waitResponse(timeout_ms, data, r1, r2, r3, r4, r5);
   }
 
-  int8_t waitResponse(GsmConstStr r1 = GFP(GSM_OK),
-                      GsmConstStr r2 = GFP(GSM_ERROR), GsmConstStr r3 = NULL,
-                      GsmConstStr r4 = NULL, GsmConstStr r5 = NULL) {
+  int8_t waitResponse(__FlashStringHelper* r1 = GFP(GSM_OK),
+                      __FlashStringHelper* r2 = GFP(GSM_ERROR), __FlashStringHelper* r3 = NULL,
+                      __FlashStringHelper* r4 = NULL, __FlashStringHelper* r5 = NULL) {
     return waitResponse(1000, r1, r2, r3, r4, r5);
   }
 
@@ -1427,7 +1427,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
       // Cannot send anything for 1 "guard time" before entering command mode
       // Default guard time is 1s, but the init fxn decreases it to 100 ms
       delay(guardTime + 10);
-      streamWrite(GF("+++"));  // enter command mode
+      streamWrite(F("+++"));  // enter command mode
       int8_t res = waitResponse(guardTime * 2);
       success    = (1 == res);
       if (0 == res) {
@@ -1450,9 +1450,9 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   }
 
   bool writeChanges(void) {
-    sendAT(GF("WR"));  // Write changes to flash
+    sendAT(F("WR"));  // Write changes to flash
     if (1 != waitResponse()) { return false; }
-    sendAT(GF("AC"));  // Apply changes
+    sendAT(F("AC"));  // Apply changes
     if (1 != waitResponse()) { return false; }
     return true;
   }
@@ -1460,7 +1460,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   void exitCommand(void) {
     // NOTE:  Here we explicitely try to exit command mode
     // even if the internal flag inCommandMode was already false
-    sendAT(GF("CN"));  // Exit command mode
+    sendAT(F("CN"));  // Exit command mode
     waitResponse();
     inCommandMode = false;
   }
@@ -1471,14 +1471,14 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   }
 
   void getSeries(void) {
-    sendAT(GF("HS"));  // Get the "Hardware Series";
+    sendAT(F("HS"));  // Get the "Hardware Series";
     int16_t intRes = readResponseInt();
     beeType        = (XBeeType)intRes;
-    DBG(GF("### Modem: "), getModemName());
+    DBG(F("### Modem: "), getModemName());
   }
 
   String readResponseString(uint32_t timeout_ms = 1000) {
-    TINY_GSM_YIELD();
+    SIMPLE_WIFI_YIELD();
     uint32_t startMillis = millis();
     while (!stream.available() && millis() - startMillis < timeout_ms) {}
     String res =
@@ -1499,7 +1499,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     return intRes;
   }
 
-  String sendATGetString(GsmConstStr cmd) {
+  String sendATGetString(__FlashStringHelper* cmd) {
     XBEE_COMMAND_START_DECORATOR(5, "")
     sendAT(cmd);
     String res = readResponseString();
@@ -1507,7 +1507,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     return res;
   }
 
-  bool changeSettingIfNeeded(GsmConstStr cmd, int16_t newValue,
+  bool changeSettingIfNeeded(__FlashStringHelper* cmd, int16_t newValue,
                              uint32_t timeout_ms = 1000L) {
     sendAT(cmd);
     if (readResponseInt() != newValue) {
@@ -1521,7 +1521,7 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
     return false;
   }
 
-  bool changeSettingIfNeeded(GsmConstStr cmd, String newValue,
+  bool changeSettingIfNeeded(__FlashStringHelper* cmd, String newValue,
                              uint32_t timeout_ms = 1000L) {
     sendAT(cmd);
     if (readResponseString() != newValue) {
@@ -1546,8 +1546,8 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   Stream& stream;
 
  protected:
-  GsmClientXBee* sockets[TINY_GSM_MUX_COUNT];
-  const char*    gsmNL = GSM_NL;
+  GsmClientXBee* sockets[SIMPLE_WIFI_MUX_COUNT];
+  const char*    crlf = CRLF;
   int16_t        guardTime;
   XBeeType       beeType;
   int8_t         resetPin;
@@ -1559,4 +1559,4 @@ class TinyGsmXBee : public TinyGsmModem<TinyGsmXBee>,
   uint32_t       lastCommandModeMillis;
 };
 
-#endif  // SRC_TINYGSMCLIENTXBEE_H_
+#endif  // SRC_SIMPLEWIFICLIENTXBEE_H_

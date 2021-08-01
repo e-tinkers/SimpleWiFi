@@ -1,20 +1,21 @@
 /**
- * @file       TinyGsmWifi.tpp
- * @author     Volodymyr Shymanskyy
+ * @file       SimpleWiFiWifi.tpp
+ * @author     Henry Cheung
  * @license    LGPL-3.0
- * @copyright  Copyright (c) 2016 Volodymyr Shymanskyy
- * @date       Nov 2016
+ * @copyright  Copyright (c) 2016 TinyGSM - Volodymyr Shymanskyy
+ * @copyright  Copyright (c) 2021 SimpleWiFi - Henry Cheung
+ * @date       July 2021
  */
 
-#ifndef SRC_TINYGSMWIFI_H_
-#define SRC_TINYGSMWIFI_H_
+#ifndef SRC_SIMPLEWIFIWIFI_H_
+#define SRC_SIMPLEWIFIWIFI_H_
 
-#include "TinyGsmCommon.h"
+#include "SimpleWiFiCommon.h"
 
-#define TINY_GSM_MODEM_HAS_WIFI
+#define SIMPLE_WIFI_MODEM_HAS_WIFI
 
 template <class modemType>
-class TinyGsmWifi {
+class SimpleWiFiWifi {
  public:
   /*
    * WiFi functions
@@ -42,8 +43,8 @@ class TinyGsmWifi {
    */
 
   bool networkConnectImpl(const char* ssid,
-                          const char* pwd) TINY_GSM_ATTR_NOT_IMPLEMENTED;
-  bool networkDisconnectImpl() TINY_GSM_ATTR_NOT_IMPLEMENTED;
+                          const char* pwd) SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
+  bool networkDisconnectImpl() SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
 };
 
-#endif  // SRC_TINYGSMWIFI_H_
+#endif  // SRC_SIMPLEWIFIWIFI_H_

@@ -1,20 +1,21 @@
 /**
- * @file       TinyGsmBattery.tpp
- * @author     Volodymyr Shymanskyy
+ * @file       SimpleWiFiBattery.tpp
+ * @author     Henry Cheung
  * @license    LGPL-3.0
- * @copyright  Copyright (c) 2016 Volodymyr Shymanskyy
- * @date       Nov 2016
+ * @copyright  Copyright (c) 2016 TinyGSM - Volodymyr Shymanskyy
+ * @copyright  Copyright (c) 2021 SimpleWiFi - Henry Cheung
+ * @date       July 2021
  */
 
-#ifndef SRC_TINYGSMBATTERY_H_
-#define SRC_TINYGSMBATTERY_H_
+#ifndef SRC_SIMPLEWIFIBATTERY_H_
+#define SRC_SIMPLEWIFIBATTERY_H_
 
-#include "TinyGsmCommon.h"
+#include "SimpleWiFiCommon.h"
 
-#define TINY_GSM_MODEM_HAS_BATTERY
+#define SIMPLE_WIFI_MODEM_HAS_BATTERY
 
 template <class modemType>
-class TinyGsmBattery {
+class SimpleWiFiBattery {
  public:
   /*
    * Battery functions
@@ -50,8 +51,8 @@ class TinyGsmBattery {
  protected:
   // Use: float vBatt = modem.getBattVoltage() / 1000.0;
   uint16_t getBattVoltageImpl() {
-    thisModem().sendAT(GF("+CBC"));
-    if (thisModem().waitResponse(GF("+CBC:")) != 1) { return 0; }
+    thisModem().sendAT(F("+CBC"));
+    if (thisModem().waitResponse(F("+CBC:")) != 1) { return 0; }
     thisModem().streamSkipUntil(',');  // Skip battery charge status
     thisModem().streamSkipUntil(',');  // Skip battery charge level
     // return voltage in mV
@@ -62,8 +63,8 @@ class TinyGsmBattery {
   }
 
   int8_t getBattPercentImpl() {
-    thisModem().sendAT(GF("+CBC"));
-    if (thisModem().waitResponse(GF("+CBC:")) != 1) { return false; }
+    thisModem().sendAT(F("+CBC"));
+    if (thisModem().waitResponse(F("+CBC:")) != 1) { return false; }
     thisModem().streamSkipUntil(',');  // Skip battery charge status
     // Read battery charge level
     int8_t res = thisModem().streamGetIntBefore(',');
@@ -73,8 +74,8 @@ class TinyGsmBattery {
   }
 
   uint8_t getBattChargeStateImpl() {
-    thisModem().sendAT(GF("+CBC"));
-    if (thisModem().waitResponse(GF("+CBC:")) != 1) { return false; }
+    thisModem().sendAT(F("+CBC"));
+    if (thisModem().waitResponse(F("+CBC:")) != 1) { return false; }
     // Read battery charge status
     int8_t res = thisModem().streamGetIntBefore(',');
     // Wait for final OK
@@ -84,8 +85,8 @@ class TinyGsmBattery {
 
   bool getBattStatsImpl(uint8_t& chargeState, int8_t& percent,
                         uint16_t& milliVolts) {
-    thisModem().sendAT(GF("+CBC"));
-    if (thisModem().waitResponse(GF("+CBC:")) != 1) { return false; }
+    thisModem().sendAT(F("+CBC"));
+    if (thisModem().waitResponse(F("+CBC:")) != 1) { return false; }
     chargeState = thisModem().streamGetIntBefore(',');
     percent     = thisModem().streamGetIntBefore(',');
     milliVolts  = thisModem().streamGetIntBefore('\n');
@@ -95,4 +96,4 @@ class TinyGsmBattery {
   }
 };
 
-#endif  // SRC_TINYGSMBATTERY_H_
+#endif  // SRC_SIMPLEWIFIBATTERY_H_

@@ -1,27 +1,27 @@
 /**
- * @file       TinyGsmNTP.tpp
+ * @file       SimpleWiFiNTP.tpp
  * @author     Volodymyr Shymanskyy
  * @license    LGPL-3.0
  * @copyright  Copyright (c) 2016 Volodymyr Shymanskyy
  * @date       Nov 2016
  */
 
-#ifndef SRC_TINYGSMNTP_H_
-#define SRC_TINYGSMNTP_H_
+#ifndef SRC_SIMPLEWIFINTP_H_
+#define SRC_SIMPLEWIFINTP_H_
 
-#include "TinyGsmCommon.h"
+#include "SimpleWiFiCommon.h"
 
-#define TINY_GSM_MODEM_HAS_NTP
+#define SIMPLE_WIFI_MODEM_HAS_NTP
 
 template <class modemType>
-class TinyGsmNTP {
+class SimpleWiFiNTP {
  public:
   /*
    * NTP server functions
    */
 
  public:
-  bool TinyGsmIsValidNumber(String str) {
+  bool SimpleWiFiIsValidNumber(String str) {
     if (!(str.charAt(0) == '+' || str.charAt(0) == '-' ||
           isDigit(str.charAt(0))))
       return false;
@@ -57,19 +57,19 @@ class TinyGsmNTP {
   byte NTPServerSyncImpl(String server = "pool.ntp.org", byte TimeZone = 3) {
     // Set GPRS bearer profile to associate with NTP sync
     // this may fail, it's not supported by all modules
-    thisModem().sendAT(GF("+CNTPCID=1"));
+    thisModem().sendAT(F("+CNTPCID=1"));
     thisModem().waitResponse(10000L);
 
     // Set NTP server and timezone
-    thisModem().sendAT(GF("+CNTP=\""), server, "\",", String(TimeZone));
+    thisModem().sendAT(F("+CNTP=\""), server, "\",", String(TimeZone));
     if (thisModem().waitResponse(10000L) != 1) { return -1; }
 
     // Request network synchronization
-    thisModem().sendAT(GF("+CNTP"));
-    if (thisModem().waitResponse(10000L, GF("+CNTP:"))) {
+    thisModem().sendAT(F("+CNTP"));
+    if (thisModem().waitResponse(10000L, F("+CNTP:"))) {
       String result = thisModem().stream.readStringUntil('\n');
       result.trim();
-      if (TinyGsmIsValidNumber(result)) { return result.toInt(); }
+      if (SimpleWiFiIsValidNumber(result)) { return result.toInt(); }
     } else {
       return -1;
     }
@@ -89,4 +89,4 @@ class TinyGsmNTP {
   }
 };
 
-#endif  // SRC_TINYGSMNTP_H_
+#endif  // SRC_SIMPLEWIFINTP_H_

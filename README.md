@@ -66,7 +66,7 @@ If you like **SimpleWiFi** - give it a star, or fork it and contribute!
 
 The general flow of your code should be:
 - Define the module that you are using (choose one and only one)
-    - ie, `#define TINY_GSM_MODEM_SIM800`
+    - ie, `#define SIMPLE_WIFI_MODEM_SIM800`
 - Included SimpleWiFi
     - `#include <SimpleWiFiClient.h>`
 - Create a SimpleWiFi modem instance
@@ -157,9 +157,9 @@ Use this sketch to help diagnose connection issues:
 
 If the diagnostics fail, uncomment this line to output some debugging comments from the library:
 ```cpp
-#define TINY_GSM_DEBUG SerialMon
+#define SIMPLE_WIFI_DEBUG SerialMon
 ```
-In any custom code, `TINY_GSM_DEBUG` must be defined before including the SimpleWiFi library.
+In any custom code, `SIMPLE_WIFI_DEBUG` must be defined before including the SimpleWiFi library.
 
 If you are unable to see any obvious errors in the library debugging, use [StreamDebugger](https://github.com/vshymanskyy/StreamDebugger) to copy the entire AT command sequence to the main serial port.
 In the diagnostics example, simply uncomment the line:

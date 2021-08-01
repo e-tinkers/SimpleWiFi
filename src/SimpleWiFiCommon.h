@@ -1,16 +1,17 @@
 /**
- * @file       TinyGsmCommon.h
- * @author     Volodymyr Shymanskyy
+ * @file       SimpleWiFiCommon.h
+ * @author     Henry Cheung
  * @license    LGPL-3.0
- * @copyright  Copyright (c) 2016 Volodymyr Shymanskyy
- * @date       Nov 2016
+ * @copyright  Copyright (c) 2016 TinyGSM - Volodymyr Shymanskyy
+ * @copyright  Copyright (c) 2021 SimpleWiFi - Henry Cheung
+ * @date       July 2021
  */
 
-#ifndef SRC_TINYGSMCOMMON_H_
-#define SRC_TINYGSMCOMMON_H_
+#ifndef SRC_SIMPLEWIFICOMMON_H_
+#define SRC_SIMPLEWIFICOMMON_H_
 
 // The current library version number
-#define TINYGSM_VERSION "0.11.4"
+#define SIMPLEWIFI_VERSION "1.0.0"
 
 #if defined(SPARK) || defined(PARTICLE)
 #include "Particle.h"
@@ -28,50 +29,44 @@
 #include <Client.h>
 #endif
 
-#ifndef TINY_GSM_YIELD_MS
-#define TINY_GSM_YIELD_MS 0
+#ifndef SIMPLE_WIFI_YIELD_MS
+#define SIMPLE_WIFI_YIELD_MS 0
 #endif
 
-#ifndef TINY_GSM_YIELD
-#define TINY_GSM_YIELD() \
-  { delay(TINY_GSM_YIELD_MS); }
+#ifndef SIMPLE_WIFI_YIELD
+#define SIMPLE_WIFI_YIELD() { delay(SIMPLE_WIFI_YIELD_MS); }
 #endif
 
-#define TINY_GSM_ATTR_NOT_AVAILABLE \
-  __attribute__((error("Not available on this modem type")))
-#define TINY_GSM_ATTR_NOT_IMPLEMENTED __attribute__((error("Not implemented")))
+#define SIMPLE_WIFI_ATTR_NOT_AVAILABLE __attribute__((error("Not available on this modem type")))
+#define SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED __attribute__((error("Not implemented")))
 
 #if defined(__AVR__) && !defined(__AVR_ATmega4809__)
-#define TINY_GSM_PROGMEM PROGMEM
-typedef const __FlashStringHelper* GsmConstStr;
-#define GFP(x) (reinterpret_cast<GsmConstStr>(x))
-#define GF(x) F(x)
+#define SIMPLE_WIFI_PROGMEM PROGMEM
+#define GFP(x) (reinterpret_cast<__FlashStringHelper*>(x))
 #else
-#define TINY_GSM_PROGMEM
-typedef const char* GsmConstStr;
+#define SIMPLE_WIFI_PROGMEM
 #define GFP(x) x
-#define GF(x) x
 #endif
 
-#ifdef TINY_GSM_DEBUG
+#ifdef SIMPLE_WIFI_DEBUG
 namespace {
 template <typename T>
 static void DBG_PLAIN(T last) {
-  TINY_GSM_DEBUG.println(last);
+  SIMPLE_WIFI_DEBUG.println(last);
 }
 
 template <typename T, typename... Args>
 static void DBG_PLAIN(T head, Args... tail) {
-  TINY_GSM_DEBUG.print(head);
-  TINY_GSM_DEBUG.print(' ');
+  SIMPLE_WIFI_DEBUG.print(head);
+  SIMPLE_WIFI_DEBUG.print(' ');
   DBG_PLAIN(tail...);
 }
 
 template <typename... Args>
 static void DBG(Args... args) {
-  TINY_GSM_DEBUG.print(GF("["));
-  TINY_GSM_DEBUG.print(millis());
-  TINY_GSM_DEBUG.print(GF("] "));
+  SIMPLE_WIFI_DEBUG.print(F("["));
+  SIMPLE_WIFI_DEBUG.print(millis());
+  SIMPLE_WIFI_DEBUG.print(F("] "));
   DBG_PLAIN(args...);
 }
 }  // namespace
@@ -81,17 +76,17 @@ static void DBG(Args... args) {
 #endif
 
 template <class T>
-const T& TinyGsmMin(const T& a, const T& b) {
+const T& SimpleWiFiMin(const T& a, const T& b) {
   return (b < a) ? b : a;
 }
 
 template <class T>
-const T& TinyGsmMax(const T& a, const T& b) {
+const T& SimpleWiFiMax(const T& a, const T& b) {
   return (b < a) ? a : b;
 }
 
 template <class T>
-uint32_t TinyGsmAutoBaud(T& SerialAT, uint32_t minimum = 9600,
+uint32_t SimpleWiFiAutoBaud(T& SerialAT, uint32_t minimum = 9600,
                          uint32_t maximum = 115200) {
   static uint32_t rates[] = {115200, 57600,  38400, 19200, 9600,  74400, 74880,
                              230400, 460800, 2400,  4800,  14400, 28800};
@@ -116,4 +111,4 @@ uint32_t TinyGsmAutoBaud(T& SerialAT, uint32_t minimum = 9600,
   return 0;
 }
 
-#endif  // SRC_TINYGSMCOMMON_H_
+#endif  // SRC_SIMPLEWIFICOMMON_H_

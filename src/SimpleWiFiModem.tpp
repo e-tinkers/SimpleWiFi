@@ -1,18 +1,19 @@
 /**
- * @file       TinyGsmModem.tpp
- * @author     Volodymyr Shymanskyy
+ * @file       SimpleWiFiModem.tpp
+ * @author     Henry Cheung
  * @license    LGPL-3.0
- * @copyright  Copyright (c) 2016 Volodymyr Shymanskyy
- * @date       Nov 2016
+ * @copyright  Copyright (c) 2016 TinyGSM - Volodymyr Shymanskyy
+ * @copyright  Copyright (c) 2021 SimpleWiFi - Henry Cheung
+ * @date       July 2021
  */
 
-#ifndef SRC_TINYGSMMODEM_H_
-#define SRC_TINYGSMMODEM_H_
+#ifndef SRC_SIMPLEWIFIMODEM_H_
+#define SRC_SIMPLEWIFIMODEM_H_
 
-#include "TinyGsmCommon.h"
+#include "SimpleWiFiCommon.h"
 
 template <class modemType>
-class TinyGsmModem {
+class SimpleWiFiModem {
  public:
   /*
    * Basic functions
@@ -25,9 +26,9 @@ class TinyGsmModem {
   }
   template <typename... Args>
   inline void sendAT(Args... cmd) {
-    thisModem().streamWrite("AT", cmd..., thisModem().gsmNL);
+    thisModem().streamWrite("AT", cmd..., thisModem().crlf);
     thisModem().stream.flush();
-    TINY_GSM_YIELD(); /* DBG("### AT:", cmd...); */
+    SIMPLE_WIFI_YIELD(); /* DBG("### AT:", cmd...); */
   }
   void setBaud(uint32_t baud) {
     thisModem().setBaudImpl(baud);
@@ -88,7 +89,7 @@ class TinyGsmModem {
     return thisModem().getLocalIPImpl();
   }
   IPAddress localIP() {
-    return thisModem().TinyGsmIpFromString(thisModem().getLocalIP());
+    return thisModem().SimpleWiFiIpFromString(thisModem().getLocalIP());
   }
 
   /*
@@ -107,13 +108,13 @@ class TinyGsmModem {
    */
  protected:
   void setBaudImpl(uint32_t baud) {
-    thisModem().sendAT(GF("+IPR="), baud);
+    thisModem().sendAT(F("+IPR="), baud);
     thisModem().waitResponse();
   }
 
   bool testATImpl(uint32_t timeout_ms = 10000L) {
     for (uint32_t start = millis(); millis() - start < timeout_ms;) {
-      thisModem().sendAT(GF(""));
+      thisModem().sendAT(F(""));
       if (thisModem().waitResponse(200) == 1) { return true; }
       delay(100);
     }
@@ -121,7 +122,7 @@ class TinyGsmModem {
   }
 
   String getModemInfoImpl() {
-    thisModem().sendAT(GF("I"));
+    thisModem().sendAT(F("I"));
     String res;
     if (thisModem().waitResponse(1000L, res) != 1) { return ""; }
     // Do the replaces twice so we cover both \r and \r\n type endings
@@ -134,14 +135,14 @@ class TinyGsmModem {
   }
 
   String getModemNameImpl() {
-    thisModem().sendAT(GF("+CGMI"));
+    thisModem().sendAT(F("+CGMI"));
     String res1;
     if (thisModem().waitResponse(1000L, res1) != 1) { return "unknown"; }
     res1.replace("\r\nOK\r\n", "");
     res1.replace("\rOK\r", "");
     res1.trim();
 
-    thisModem().sendAT(GF("+GMM"));
+    thisModem().sendAT(F("+GMM"));
     String res2;
     if (thisModem().waitResponse(1000L, res2) != 1) { return "unknown"; }
     res2.replace("\r\nOK\r\n", "");
@@ -154,11 +155,11 @@ class TinyGsmModem {
   }
 
   bool factoryDefaultImpl() {
-    thisModem().sendAT(GF("&FZE0&W"));  // Factory + Reset + Echo Off + Write
+    thisModem().sendAT(F("&FZE0&W"));  // Factory + Reset + Echo Off + Write
     thisModem().waitResponse();
-    thisModem().sendAT(GF("+IPR=0"));  // Auto-baud
+    thisModem().sendAT(F("+IPR=0"));  // Auto-baud
     thisModem().waitResponse();
-    thisModem().sendAT(GF("&W"));  // Write configuration
+    thisModem().sendAT(F("&W"));  // Write configuration
     return thisModem().waitResponse() == 1;
   }
 
@@ -172,10 +173,10 @@ class TinyGsmModem {
     return true;
   }
 
-  bool sleepEnableImpl(bool enable = true) TINY_GSM_ATTR_NOT_IMPLEMENTED;
+  bool sleepEnableImpl(bool enable = true) SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
 
   bool setPhoneFunctionalityImpl(uint8_t fun, bool reset = false)
-      TINY_GSM_ATTR_NOT_IMPLEMENTED;
+      SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
 
   /*
    * Generic network functions
@@ -188,8 +189,8 @@ class TinyGsmModem {
   int8_t getRegistrationStatusXREG(const char* regCommand) {
     thisModem().sendAT('+', regCommand, '?');
     // check for any of the three for simplicity
-    int8_t resp = thisModem().waitResponse(GF("+CREG:"), GF("+CGREG:"),
-                                           GF("+CEREG:"));
+    int8_t resp = thisModem().waitResponse(F("+CREG:"), F("+CGREG:"),
+                                           F("+CEREG:"));
     if (resp != 1 && resp != 2 && resp != 3) { return -1; }
     thisModem().streamSkipUntil(','); /* Skip format (0) */
     int status = thisModem().stream.parseInt();
@@ -209,23 +210,23 @@ class TinyGsmModem {
 
   // Gets signal quality report according to 3GPP TS command AT+CSQ
   int8_t getSignalQualityImpl() {
-    thisModem().sendAT(GF("+CSQ"));
-    if (thisModem().waitResponse(GF("+CSQ:")) != 1) { return 99; }
+    thisModem().sendAT(F("+CSQ"));
+    if (thisModem().waitResponse(F("+CSQ:")) != 1) { return 99; }
     int8_t res = thisModem().streamGetIntBefore(',');
     thisModem().waitResponse();
     return res;
   }
 
   String getLocalIPImpl() {
-    thisModem().sendAT(GF("+CGPADDR=1"));
-    if (thisModem().waitResponse(GF("+CGPADDR:")) != 1) { return ""; }
+    thisModem().sendAT(F("+CGPADDR=1"));
+    if (thisModem().waitResponse(F("+CGPADDR:")) != 1) { return ""; }
     thisModem().streamSkipUntil(',');  // Skip context id
     String res = thisModem().stream.readStringUntil('\r');
     if (thisModem().waitResponse() != 1) { return ""; }
     return res;
   }
 
-  static inline IPAddress TinyGsmIpFromString(const String& strIP) {
+  static inline IPAddress SimpleWiFiIpFromString(const String& strIP) {
     int Parts[4] = {
         0,
     };
@@ -277,7 +278,7 @@ class TinyGsmModem {
     uint32_t startMillis   = millis();
     while (millis() - startMillis < timeout_ms &&
            (numCharsReady = thisModem().stream.available()) < numChars) {
-      TINY_GSM_YIELD();
+      SIMPLE_WIFI_YIELD();
     }
 
     if (numCharsReady >= numChars) {
@@ -343,7 +344,7 @@ class TinyGsmModem {
     while (millis() - startMillis < timeout_ms) {
       while (millis() - startMillis < timeout_ms &&
              !thisModem().stream.available()) {
-        TINY_GSM_YIELD();
+        SIMPLE_WIFI_YIELD();
       }
       if (thisModem().stream.read() == c) { return true; }
     }
@@ -351,4 +352,4 @@ class TinyGsmModem {
   }
 };
 
-#endif  // SRC_TINYGSMMODEM_H_
+#endif  // SRC_SIMPLEWIFIMODEM_H_

@@ -1,20 +1,21 @@
 /**
- * @file       TinyGsmTemperature.tpp
- * @author     Volodymyr Shymanskyy
+ * @file       SimpleWiFiTemperature.tpp
+ * @author     Henry Cheung
  * @license    LGPL-3.0
- * @copyright  Copyright (c) 2016 Volodymyr Shymanskyy
- * @date       Nov 2016
+ * @copyright  Copyright (c) 2016 TinyGSM - Volodymyr Shymanskyy
+ * @copyright  Copyright (c) 2021 SimpleWiFi - Henry Cheung
+ * @date       July 2021
  */
 
-#ifndef SRC_TINYGSMTEMPERATURE_H_
-#define SRC_TINYGSMTEMPERATURE_H_
+#ifndef SRC_SIMPLEWIFITEMPERATURE_H_
+#define SRC_SIMPLEWIFITEMPERATURE_H_
 
-#include "TinyGsmCommon.h"
+#include "SimpleWiFiCommon.h"
 
-#define TINY_GSM_MODEM_HAS_TEMPERATURE
+#define SIMPLE_WIFI_MODEM_HAS_TEMPERATURE
 
 template <class modemType>
-class TinyGsmTemperature {
+class SimpleWiFiTemperature {
  public:
   /*
    * Temperature functions
@@ -34,7 +35,7 @@ class TinyGsmTemperature {
     return static_cast<modemType&>(*this);
   }
 
-  float getTemperatureImpl() TINY_GSM_ATTR_NOT_IMPLEMENTED;
+  float getTemperatureImpl() SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
 };
 
-#endif  // SRC_TINYGSMTEMPERATURE_H_
+#endif  // SRC_SIMPLEWIFITEMPERATURE_H_

@@ -15,14 +15,14 @@
  **************************************************************/
 
 // Industruino uses SIM800H
-#define TINY_GSM_MODEM_SIM800
+#define SIMPLE_WIFI_MODEM_SIM800
 
 // Increase RX buffer if needed
-#if !defined(TINY_GSM_RX_BUFFER)
-#define TINY_GSM_RX_BUFFER 512
+#if !defined(SIMPLE_WIFI_RX_BUFFER)
+#define SIMPLE_WIFI_RX_BUFFER 512
 #endif
 
-#include <TinyGsmClient.h>
+#include <SimpleWiFiClient.h>
 #include <ArduinoHttpClient.h>
 
 // Uncomment this if you want to see all AT commands
@@ -50,16 +50,16 @@ const char resource[] = "/TinyGSM/logo.txt";
 #ifdef DUMP_AT_COMMANDS
   #include <StreamDebugger.h>
   StreamDebugger debugger(SerialAT, SerialMon);
-  TinyGsm modem(debugger);
+  SimpleWiFi modem(debugger);
 #else
-  TinyGsm modem(SerialAT);
+  SimpleWiFi modem(SerialAT);
 #endif
 
 #ifdef USE_SSL
-  TinyGsmClientSecure client(modem);
+  SimpleWiFiClientSecure client(modem);
   HttpClient http(client, server, 443);
 #else
-  TinyGsmClient client(modem);
+  SimpleWiFiClient client(modem);
   HttpClient http(client, server, 80);
 #endif
 

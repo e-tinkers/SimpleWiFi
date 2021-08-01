@@ -1,20 +1,20 @@
 /**
- * @file       TinyGsmGPS.tpp
+ * @file       SimpleWiFiGPS.tpp
  * @author     Adrian Cervera Andes
  * @license    LGPL-3.0
  * @copyright  Copyright (c) 2021 Adrian Cervera Andes
  * @date       Jan 2021
  */
 
-#ifndef SRC_TINYGSMBLUETOOTH_H_
-#define SRC_TINYGSMBLUETOOTH_H_
+#ifndef SRC_SIMPLEWIFIBLUETOOTH_H_
+#define SRC_SIMPLEWIFIBLUETOOTH_H_
 
-#include "TinyGsmCommon.h"
+#include "SimpleWiFiCommon.h"
 
-#define TINY_GSM_MODEM_HAS_BLUETOOTH
+#define SIMPLE_WIFI_MODEM_HAS_BLUETOOTH
 
 template <class modemType>
-class TinyGsmBluetooth {
+class SimpleWiFiBluetooth {
  public:
   /*
    * Bluetooth functions
@@ -47,11 +47,11 @@ class TinyGsmBluetooth {
    * Bluetooth functions
    */
 
-  bool    enableBluetoothImpl() TINY_GSM_ATTR_NOT_IMPLEMENTED;
-  bool    disableBluetoothImpl() TINY_GSM_ATTR_NOT_IMPLEMENTED;
-  bool    setBluetoothVisibilityImpl(bool visible) TINY_GSM_ATTR_NOT_IMPLEMENTED;
-  bool    setBluetoothHostNameImpl(const char* name) TINY_GSM_ATTR_NOT_IMPLEMENTED;
+  bool    enableBluetoothImpl() SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
+  bool    disableBluetoothImpl() SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
+  bool    setBluetoothVisibilityImpl(bool visible) SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
+  bool    setBluetoothHostNameImpl(const char* name) SIMPLE_WIFI_ATTR_NOT_IMPLEMENTED;
 };
 
 
-#endif  // SRC_TINYGSMBLUETOOTH_H_
+#endif  // SRC_SIMPLEWIFIBLUETOOTH_H_
