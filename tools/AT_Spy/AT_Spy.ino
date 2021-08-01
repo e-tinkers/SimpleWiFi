@@ -4,7 +4,7 @@
  * between an Arduino and the modem.
  *
  * TinyGSM Getting Started guide:
- *   https://tiny.cc/tinygsm-readme
+ *   https://github.com/e-tinkers/SimpleWiFi
  *
  **************************************************************/
 

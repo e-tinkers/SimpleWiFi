@@ -42,21 +42,6 @@ void loop() {
   modem.getLocalIP();
   modem.localIP();
 
-// Test the GPRS and SIM card functions
-#if defined(SIMPLE_WIFI_MODEM_HAS_GPRS)
-  modem.simUnlock("1234");
-  modem.getSimCCID();
-  modem.getIMEI();
-  modem.getIMSI();
-  modem.getSimStatus();
-
-  modem.gprsConnect("myAPN");
-  modem.gprsConnect("myAPN", "myUser");
-  modem.gprsConnect("myAPN", "myAPNUser", "myAPNPass");
-  modem.gprsDisconnect();
-  modem.getOperator();
-#endif
-
 // Test WiFi Functions
 #if defined(SIMPLE_WIFI_MODEM_HAS_WIFI)
   modem.networkConnect("mySSID", "mySSIDPassword");
@@ -71,8 +56,8 @@ void loop() {
   client.init(&modem);
   client.init(&modem, 1);
 
-  char server[]   = "somewhere";
-  char resource[] = "something";
+  char server[]   = "httpbin.org";
+  char resource[] = "/get";
 
   client.connect(server, 80);
 
@@ -116,75 +101,6 @@ void loop() {
   }
 
   client_secure.stop();
-#endif
-
-// Test the calling functions
-#if defined(SIMPLE_WIFI_MODEM_HAS_CALLING) && not defined(__AVR_ATmega32U4__)
-  modem.callNumber(String("+380000000000"));
-  modem.callHangup();
-
-#if not defined(SIMPLE_WIFI_MODEM_SEQUANS_MONARCH)
-  modem.callAnswer();
-  modem.dtmfSend('A', 1000);
-#endif
-
-#endif
-
-// Test the SMS functions
-#if defined(SIMPLE_WIFI_MODEM_HAS_SMS) && not defined(__AVR_ATmega32U4__)
-  modem.sendSMS(String("+380000000000"), String("Hello from "));
-
-#if not defined(SIMPLE_WIFI_MODEM_XBEE) && not defined(SIMPLE_WIFI_MODEM_SARAR4)
-  modem.sendUSSD("*111#");
-#endif
-
-#if not defined(SIMPLE_WIFI_MODEM_XBEE) && not defined(SIMPLE_WIFI_MODEM_M590) && \
-    not defined(SIMPLE_WIFI_MODEM_SARAR4)
-  modem.sendSMS_UTF16("+380000000000", "Hello", 5);
-#endif
-
-#endif
-
-// Test the GSM location functions
-#if defined(SIMPLE_WIFI_MODEM_HAS_GSM_LOCATION) && not defined(__AVR_ATmega32U4__)
-  modem.getGsmLocationRaw();
-  modem.getGsmLocation();
-  float glatitude  = -9999;
-  float glongitude = -9999;
-  float gacc       = 0;
-  int   gyear      = 0;
-  int   gmonth     = 0;
-  int   gday       = 0;
-  int   ghour      = 0;
-  int   gmin       = 0;
-  int   gsec       = 0;
-  modem.getGsmLocation(&glatitude, &glongitude);
-  modem.getGsmLocation(&glatitude, &glongitude, &gacc, &gyear, &gmonth, &gday,
-                       &ghour, &gmin, &gsec);
-  modem.getGsmLocationTime(&gyear, &gmonth, &gday, &ghour, &gmin, &gsec);
-#endif
-
-// Test the GPS functions
-#if defined(SIMPLE_WIFI_MODEM_HAS_GPS) && not defined(__AVR_ATmega32U4__)
-  modem.enableGPS();
-  modem.getGPSraw();
-  float latitude  = -9999;
-  float longitude = -9999;
-  float speed     = 0;
-  float alt       = 0;
-  int   vsat      = 0;
-  int   usat      = 0;
-  float acc       = 0;
-  int   year      = 0;
-  int   month     = 0;
-  int   day       = 0;
-  int   hour      = 0;
-  int   minute    = 0;
-  int   second    = 0;
-  modem.getGPS(&latitude, &longitude);
-  modem.getGPS(&latitude, &longitude, &speed, &alt, &vsat, &usat, &acc, &year,
-               &month, &day, &hour, &minute, &second);
-  modem.disableGPS();
 #endif
 
 // Test the Network time function
