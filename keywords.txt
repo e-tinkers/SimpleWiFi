@@ -1,9 +1,9 @@
 #######################################
 # Data types (KEYWORD1)
 #######################################
-TinyGsm	KEYWORD1
-TinyGsmClient	KEYWORD1
-TinyGsmClientSecure	KEYWORD1
+SimpleWiFi	KEYWORD1
+SimpleWiFiClient	KEYWORD1
+SimpleWiFiClientSecure	KEYWORD1
 
 SerialAT	KEYWORD1
 SerialMon	KEYWORD1
