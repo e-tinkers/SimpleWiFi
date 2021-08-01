@@ -2,6 +2,8 @@
 
 This is an Arduino library for interfacing with WiFi modules that using AT command interface, such as ESP8266/ESP32. This library is based on the works of TinyGSM which try to be all-things-AT-commands. This library stripped out all the unrelated non-WiFi modules and focus only on WiFi modules that using AT command interface, to make the library easier to setup and focus on the development of new features and functionalities related to WiFi modules.
 
+> **This library has not reach to a mature stage yet, therefore do not download as it may not work at this stage. Check back in the next a couple of weeks, we will remove this sentence when it is ready for use.**
+
 If you like **SimpleWiFi** - give it a star, or fork it and contribute!
 
 - [Supported WiFi modules](#supported-wifi-modules)
