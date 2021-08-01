@@ -28,7 +28,6 @@
 #include "SimpleWiFiSSL.tpp"
 #include "SimpleWiFiTCP.tpp"
 #include "SimpleWiFiTemperature.tpp"
-#include "SimpleWiFiWifi.tpp"
 
 #define AT_NL "\r"
 static const char AT_OK[] SIMPLE_WIFI_PROGMEM    = "OK\r";
@@ -67,19 +66,19 @@ enum XBeeType {
 };
 
 class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
-                    public SimpleWiFiGPRS<SimpleWiFiXBee>,
-                    public SimpleWiFiWifi<SimpleWiFiXBee>,
+//                    public SimpleWiFiGPRS<SimpleWiFiXBee>,
+//                    public SimpleWiFiWifi<SimpleWiFiXBee>,
                     public SimpleWiFiTCP<SimpleWiFiXBee, SIMPLE_WIFI_MUX_COUNT>,
                     public SimpleWiFiSSL<SimpleWiFiXBee>,
-                    public SimpleWiFiSMS<SimpleWiFiXBee>,
+//                    public SimpleWiFiSMS<SimpleWiFiXBee>,
                     public SimpleWiFiBattery<SimpleWiFiXBee>,
                     public SimpleWiFiTemperature<SimpleWiFiXBee> {
   friend class SimpleWiFiModem<SimpleWiFiXBee>;
-  friend class SimpleWiFiGPRS<SimpleWiFiXBee>;
-  friend class SimpleWiFiWifi<SimpleWiFiXBee>;
+//  friend class SimpleWiFiGPRS<SimpleWiFiXBee>;
+//  friend class SimpleWiFiWifi<SimpleWiFiXBee>;
   friend class SimpleWiFiTCP<SimpleWiFiXBee, SIMPLE_WIFI_MUX_COUNT>;
   friend class SimpleWiFiSSL<SimpleWiFiXBee>;
-  friend class SimpleWiFiSMS<SimpleWiFiXBee>;
+//  friend class SimpleWiFiSMS<SimpleWiFiXBee>;
   friend class SimpleWiFiBattery<SimpleWiFiXBee>;
   friend class SimpleWiFiTemperature<SimpleWiFiXBee>;
 

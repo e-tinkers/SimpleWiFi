@@ -16,7 +16,6 @@
 #include "SimpleWiFiModem.tpp"
 #include "SimpleWiFiSSL.tpp"
 #include "SimpleWiFiTCP.tpp"
-#include "SimpleWiFiWifi.tpp"
 
 #define AT_NL "\r\n"
 
@@ -38,11 +37,9 @@ enum RegStatus {
 };
 
 class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
-                       public SimpleWiFiWifi<SimpleWiFiESP8266>,
                        public SimpleWiFiTCP<SimpleWiFiESP8266, SIMPLE_WIFI_MUX_COUNT>,
                        public SimpleWiFiSSL<SimpleWiFiESP8266> {
   friend class SimpleWiFiModem<SimpleWiFiESP8266>;
-  friend class SimpleWiFiWifi<SimpleWiFiESP8266>;
   friend class SimpleWiFiTCP<SimpleWiFiESP8266, SIMPLE_WIFI_MUX_COUNT>;
   friend class SimpleWiFiSSL<SimpleWiFiESP8266>;
 
