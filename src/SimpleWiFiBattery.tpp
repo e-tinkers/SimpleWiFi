@@ -51,8 +51,8 @@ class SimpleWiFiBattery {
  protected:
   // Use: float vBatt = modem.getBattVoltage() / 1000.0;
   uint16_t getBattVoltageImpl() {
-    thisModem().sendAT(F("+CBC"));
-    if (thisModem().waitResponse(F("+CBC:")) != 1) { return 0; }
+    thisModem().sendAT(GF("+CBC"));
+    if (thisModem().waitResponse(GF("+CBC:")) != 1) { return 0; }
     thisModem().streamSkipUntil(',');  // Skip battery charge status
     thisModem().streamSkipUntil(',');  // Skip battery charge level
     // return voltage in mV
@@ -63,8 +63,8 @@ class SimpleWiFiBattery {
   }
 
   int8_t getBattPercentImpl() {
-    thisModem().sendAT(F("+CBC"));
-    if (thisModem().waitResponse(F("+CBC:")) != 1) { return false; }
+    thisModem().sendAT(GF("+CBC"));
+    if (thisModem().waitResponse(GF("+CBC:")) != 1) { return false; }
     thisModem().streamSkipUntil(',');  // Skip battery charge status
     // Read battery charge level
     int8_t res = thisModem().streamGetIntBefore(',');
@@ -74,8 +74,8 @@ class SimpleWiFiBattery {
   }
 
   uint8_t getBattChargeStateImpl() {
-    thisModem().sendAT(F("+CBC"));
-    if (thisModem().waitResponse(F("+CBC:")) != 1) { return false; }
+    thisModem().sendAT(GF("+CBC"));
+    if (thisModem().waitResponse(GF("+CBC:")) != 1) { return false; }
     // Read battery charge status
     int8_t res = thisModem().streamGetIntBefore(',');
     // Wait for final OK
@@ -85,8 +85,8 @@ class SimpleWiFiBattery {
 
   bool getBattStatsImpl(uint8_t& chargeState, int8_t& percent,
                         uint16_t& milliVolts) {
-    thisModem().sendAT(F("+CBC"));
-    if (thisModem().waitResponse(F("+CBC:")) != 1) { return false; }
+    thisModem().sendAT(GF("+CBC"));
+    if (thisModem().waitResponse(GF("+CBC:")) != 1) { return false; }
     chargeState = thisModem().streamGetIntBefore(',');
     percent     = thisModem().streamGetIntBefore(',');
     milliVolts  = thisModem().streamGetIntBefore('\n');

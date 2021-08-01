@@ -46,8 +46,8 @@ class SimpleWiFiTime {
    */
  protected:
   String getGSMDateTimeImpl(TinyGSMDateTimeFormat format) {
-    thisModem().sendAT(F("+CCLK?"));
-    if (thisModem().waitResponse(2000L, F("+CCLK: \"")) != 1) { return ""; }
+    thisModem().sendAT(GF("+CCLK?"));
+    if (thisModem().waitResponse(2000L, GF("+CCLK: \"")) != 1) { return ""; }
 
     String res;
 
@@ -65,8 +65,8 @@ class SimpleWiFiTime {
 
   bool getNetworkTimeImpl(int* year, int* month, int* day, int* hour,
                           int* minute, int* second, float* timezone) {
-    thisModem().sendAT(F("+CCLK?"));
-    if (thisModem().waitResponse(2000L, F("+CCLK: \"")) != 1) { return false; }
+    thisModem().sendAT(GF("+CCLK?"));
+    if (thisModem().waitResponse(2000L, GF("+CCLK: \"")) != 1) { return false; }
 
     int iyear     = 0;
     int imonth    = 0;

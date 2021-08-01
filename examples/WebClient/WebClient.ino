@@ -160,7 +160,7 @@ void setup() {
 void loop() {
 #if SIMPLE_WIFI_USE_WIFI
   // Wifi connection parameters must be set before waiting for the network
-  SerialMon.print(F("Setting SSID/password..."));
+  SerialMon.print(GF("Setting SSID/password..."));
   if (!modem.networkConnect(wifiSSID, wifiPass)) {
     SerialMon.println(" fail");
     delay(10000);
@@ -186,7 +186,7 @@ void loop() {
 
 #if SIMPLE_WIFI_USE_GPRS
   // GPRS connection parameters are usually set after network registration
-  SerialMon.print(F("Connecting to "));
+  SerialMon.print(GF("Connecting to "));
   SerialMon.print(apn);
   if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
     SerialMon.println(" fail");
@@ -228,15 +228,15 @@ void loop() {
   // Shutdown
 
   client.stop();
-  SerialMon.println(F("Server disconnected"));
+  SerialMon.println(GF("Server disconnected"));
 
 #if SIMPLE_WIFI_USE_WIFI
   modem.networkDisconnect();
-  SerialMon.println(F("WiFi disconnected"));
+  SerialMon.println(GF("WiFi disconnected"));
 #endif
 #if SIMPLE_WIFI_USE_GPRS
   modem.gprsDisconnect();
-  SerialMon.println(F("GPRS disconnected"));
+  SerialMon.println(GF("GPRS disconnected"));
 #endif
 
   // Do nothing forevermore

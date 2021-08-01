@@ -165,7 +165,7 @@ void setup() {
 void loop() {
 #if SIMPLE_WIFI_USE_WIFI
   // Wifi connection parameters must be set before waiting for the network
-  SerialMon.print(F("Setting SSID/password..."));
+  SerialMon.print(GF("Setting SSID/password..."));
   if (!modem.networkConnect(wifiSSID, wifiPass)) {
     SerialMon.println(" fail");
     delay(10000);
@@ -191,7 +191,7 @@ void loop() {
 
 #if SIMPLE_WIFI_USE_GPRS
   // GPRS connection parameters are usually set after network registration
-  SerialMon.print(F("Connecting to "));
+  SerialMon.print(GF("Connecting to "));
   SerialMon.print(apn);
   if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
     SerialMon.println(" fail");
@@ -203,23 +203,23 @@ void loop() {
   if (modem.isGprsConnected()) { SerialMon.println("GPRS connected"); }
 #endif
 
-  SerialMon.print(F("Performing HTTP GET request... "));
+  SerialMon.print(GF("Performing HTTP GET request... "));
   int err = http.get(resource);
   if (err != 0) {
-    SerialMon.println(F("failed to connect"));
+    SerialMon.println(GF("failed to connect"));
     delay(10000);
     return;
   }
 
   int status = http.responseStatusCode();
-  SerialMon.print(F("Response status code: "));
+  SerialMon.print(GF("Response status code: "));
   SerialMon.println(status);
   if (!status) {
     delay(10000);
     return;
   }
 
-  SerialMon.println(F("Response Headers:"));
+  SerialMon.println(GF("Response Headers:"));
   while (http.headerAvailable()) {
     String headerName  = http.readHeaderName();
     String headerValue = http.readHeaderValue();
@@ -228,32 +228,32 @@ void loop() {
 
   int length = http.contentLength();
   if (length >= 0) {
-    SerialMon.print(F("Content length is: "));
+    SerialMon.print(GF("Content length is: "));
     SerialMon.println(length);
   }
   if (http.isResponseChunked()) {
-    SerialMon.println(F("The response is chunked"));
+    SerialMon.println(GF("The response is chunked"));
   }
 
   String body = http.responseBody();
-  SerialMon.println(F("Response:"));
+  SerialMon.println(GF("Response:"));
   SerialMon.println(body);
 
-  SerialMon.print(F("Body length is: "));
+  SerialMon.print(GF("Body length is: "));
   SerialMon.println(body.length());
 
   // Shutdown
 
   http.stop();
-  SerialMon.println(F("Server disconnected"));
+  SerialMon.println(GF("Server disconnected"));
 
 #if SIMPLE_WIFI_USE_WIFI
   modem.networkDisconnect();
-  SerialMon.println(F("WiFi disconnected"));
+  SerialMon.println(GF("WiFi disconnected"));
 #endif
 #if SIMPLE_WIFI_USE_GPRS
   modem.gprsDisconnect();
-  SerialMon.println(F("GPRS disconnected"));
+  SerialMon.println(GF("GPRS disconnected"));
 #endif
 
   // Do nothing forevermore

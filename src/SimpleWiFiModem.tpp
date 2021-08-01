@@ -26,7 +26,7 @@ class SimpleWiFiModem {
   }
   template <typename... Args>
   inline void sendAT(Args... cmd) {
-    thisModem().streamWrite("AT", cmd..., thisModem().crlf);
+    thisModem().streamWrite("AT", cmd..., thisModem().wifiLinefeed);
     thisModem().stream.flush();
     SIMPLE_WIFI_YIELD(); /* DBG("### AT:", cmd...); */
   }
@@ -108,13 +108,13 @@ class SimpleWiFiModem {
    */
  protected:
   void setBaudImpl(uint32_t baud) {
-    thisModem().sendAT(F("+IPR="), baud);
+    thisModem().sendAT(GF("+IPR="), baud);
     thisModem().waitResponse();
   }
 
   bool testATImpl(uint32_t timeout_ms = 10000L) {
     for (uint32_t start = millis(); millis() - start < timeout_ms;) {
-      thisModem().sendAT(F(""));
+      thisModem().sendAT(GF(""));
       if (thisModem().waitResponse(200) == 1) { return true; }
       delay(100);
     }
@@ -122,7 +122,7 @@ class SimpleWiFiModem {
   }
 
   String getModemInfoImpl() {
-    thisModem().sendAT(F("I"));
+    thisModem().sendAT(GF("I"));
     String res;
     if (thisModem().waitResponse(1000L, res) != 1) { return ""; }
     // Do the replaces twice so we cover both \r and \r\n type endings
@@ -135,14 +135,14 @@ class SimpleWiFiModem {
   }
 
   String getModemNameImpl() {
-    thisModem().sendAT(F("+CGMI"));
+    thisModem().sendAT(GF("+CGMI"));
     String res1;
     if (thisModem().waitResponse(1000L, res1) != 1) { return "unknown"; }
     res1.replace("\r\nOK\r\n", "");
     res1.replace("\rOK\r", "");
     res1.trim();
 
-    thisModem().sendAT(F("+GMM"));
+    thisModem().sendAT(GF("+GMM"));
     String res2;
     if (thisModem().waitResponse(1000L, res2) != 1) { return "unknown"; }
     res2.replace("\r\nOK\r\n", "");
@@ -155,11 +155,11 @@ class SimpleWiFiModem {
   }
 
   bool factoryDefaultImpl() {
-    thisModem().sendAT(F("&FZE0&W"));  // Factory + Reset + Echo Off + Write
+    thisModem().sendAT(GF("&FZE0&W"));  // Factory + Reset + Echo Off + Write
     thisModem().waitResponse();
-    thisModem().sendAT(F("+IPR=0"));  // Auto-baud
+    thisModem().sendAT(GF("+IPR=0"));  // Auto-baud
     thisModem().waitResponse();
-    thisModem().sendAT(F("&W"));  // Write configuration
+    thisModem().sendAT(GF("&W"));  // Write configuration
     return thisModem().waitResponse() == 1;
   }
 
@@ -189,8 +189,8 @@ class SimpleWiFiModem {
   int8_t getRegistrationStatusXREG(const char* regCommand) {
     thisModem().sendAT('+', regCommand, '?');
     // check for any of the three for simplicity
-    int8_t resp = thisModem().waitResponse(F("+CREG:"), F("+CGREG:"),
-                                           F("+CEREG:"));
+    int8_t resp = thisModem().waitResponse(GF("+CREG:"), GF("+CGREG:"),
+                                           GF("+CEREG:"));
     if (resp != 1 && resp != 2 && resp != 3) { return -1; }
     thisModem().streamSkipUntil(','); /* Skip format (0) */
     int status = thisModem().stream.parseInt();
@@ -210,16 +210,16 @@ class SimpleWiFiModem {
 
   // Gets signal quality report according to 3GPP TS command AT+CSQ
   int8_t getSignalQualityImpl() {
-    thisModem().sendAT(F("+CSQ"));
-    if (thisModem().waitResponse(F("+CSQ:")) != 1) { return 99; }
+    thisModem().sendAT(GF("+CSQ"));
+    if (thisModem().waitResponse(GF("+CSQ:")) != 1) { return 99; }
     int8_t res = thisModem().streamGetIntBefore(',');
     thisModem().waitResponse();
     return res;
   }
 
   String getLocalIPImpl() {
-    thisModem().sendAT(F("+CGPADDR=1"));
-    if (thisModem().waitResponse(F("+CGPADDR:")) != 1) { return ""; }
+    thisModem().sendAT(GF("+CGPADDR=1"));
+    if (thisModem().waitResponse(GF("+CGPADDR:")) != 1) { return ""; }
     thisModem().streamSkipUntil(',');  // Skip context id
     String res = thisModem().stream.readStringUntil('\r');
     if (thisModem().waitResponse() != 1) { return ""; }

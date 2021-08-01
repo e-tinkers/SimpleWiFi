@@ -58,11 +58,11 @@ void loop() {
   }
 
   if (!rate) {
-    SerialMon.println(F("***********************************************************"));
-    SerialMon.println(F(" Module does not respond!"));
-    SerialMon.println(F("   Check your Serial wiring"));
-    SerialMon.println(F("   Check the module is correctly powered and turned on"));
-    SerialMon.println(F("***********************************************************"));
+    SerialMon.println(GF("***********************************************************"));
+    SerialMon.println(GF(" Module does not respond!"));
+    SerialMon.println(GF("   Check your Serial wiring"));
+    SerialMon.println(GF("   Check the module is correctly powered and turned on"));
+    SerialMon.println(GF("***********************************************************"));
     delay(30000L);
     return;
   }
@@ -70,11 +70,11 @@ void loop() {
   SerialAT.begin(rate);
 
   // Access AT commands from Serial Monitor
-  SerialMon.println(F("***********************************************************"));
-  SerialMon.println(F(" You can now send AT commands"));
-  SerialMon.println(F(" Enter \"AT\" (without quotes), and you should see \"OK\""));
-  SerialMon.println(F(" If it doesn't work, select \"Both NL & CR\" in Serial Monitor"));
-  SerialMon.println(F("***********************************************************"));
+  SerialMon.println(GF("***********************************************************"));
+  SerialMon.println(GF(" You can now send AT commands"));
+  SerialMon.println(GF(" Enter \"AT\" (without quotes), and you should see \"OK\""));
+  SerialMon.println(GF(" If it doesn't work, select \"Both NL & CR\" in Serial Monitor"));
+  SerialMon.println(GF("***********************************************************"));
 
   while(true) {
     if (SerialAT.available()) {

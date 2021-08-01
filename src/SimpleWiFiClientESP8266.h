@@ -18,9 +18,10 @@
 #include "SimpleWiFiTCP.tpp"
 #include "SimpleWiFiWifi.tpp"
 
-#define CRLF "\r\n"
-static const char GSM_OK[] SIMPLE_WIFI_PROGMEM    = "OK" CRLF;
-static const char GSM_ERROR[] SIMPLE_WIFI_PROGMEM = "ERROR" CRLF;
+#define AT_NL "\r\n"
+
+static const char AT_OK[] SIMPLE_WIFI_PROGMEM    = "OK\r\n";
+static const char AT_ERROR[] SIMPLE_WIFI_PROGMEM = "ERROR\r\n";
 static uint8_t    SIMPLE_WIFI_TCP_KEEP_ALIVE      = 120;
 
 // <stat> status of ESP8266 station interface
@@ -85,7 +86,7 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
 
     void stop(uint32_t maxWaitMs) {
       SIMPLE_WIFI_YIELD();
-      at->sendAT(F("+CIPCLOSE="), mux);
+      at->sendAT(GF("+CIPCLOSE="), mux);
       sock_connected = false;
       at->waitResponse(maxWaitMs);
       rx.clear();
@@ -136,17 +137,17 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
    */
  protected:
   bool initImpl(const char* pin = NULL) {
-    DBG(F("### SimpleWiFi Version:"), SIMPLEWIFI_VERSION);
-    DBG(F("### SimpleWiFi Module:  SimpleWiFiClientESP8266"));
+    DBG(GF("### SimpleWiFi Version:"), SIMPLEWIFI_VERSION);
+    DBG(GF("### SimpleWiFi Module:  SimpleWiFiClientESP8266"));
 
     if (!testAT()) { return false; }
-    sendAT(F("E0"));  // Echo Off
+    sendAT(GF("E0"));  // Echo Off
     if (waitResponse() != 1) { return false; }
-    sendAT(F("+CIPMUX=1"));  // Enable Multiple Connections
+    sendAT(GF("+CIPMUX=1"));  // Enable Multiple Connections
     if (waitResponse() != 1) { return false; }
-    sendAT(F("+CWMODE_CUR=1"));  // Put into "station" mode
+    sendAT(GF("+CWMODE_CUR=1"));  // Put into "station" mode
     if (waitResponse() != 1) { return false; }
-    DBG(F("### Modem:"), getModemName());
+    DBG(GF("### Modem:"), getModemName());
     return true;
   }
 
@@ -155,20 +156,20 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
   }
 
   void setBaudImpl(uint32_t baud) {
-    sendAT(F("+UART_CUR="), baud, "8,1,0,0");
+    sendAT(GF("+UART_CUR="), baud, "8,1,0,0");
   }
 
   bool factoryDefaultImpl() {
-    sendAT(F("+RESTORE"));
+    sendAT(GF("+RESTORE"));
     return waitResponse() == 1;
   }
 
   String getModemInfoImpl() {
-    sendAT(F("+GMR"));
+    sendAT(GF("+GMR"));
     String res;
     if (waitResponse(1000L, res) != 1) { return ""; }
-    res.replace(CRLF "OK" CRLF, "");
-    res.replace(CRLF, " ");
+    res.replace("\r\nOK\r\n", "");
+    res.replace(AT_NL, " ");
     res.trim();
     return res;
   }
@@ -179,15 +180,15 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
  protected:
   bool restartImpl(const char* pin = NULL) {
     if (!testAT()) { return false; }
-    sendAT(F("+RST"));
+    sendAT(GF("+RST"));
     if (waitResponse(10000L) != 1) { return false; }
-    if (waitResponse(10000L, F(CRLF "ready" CRLF)) != 1) { return false; }
+    if (waitResponse(10000L, GF("\r\nready\r\n")) != 1) { return false; }
     delay(500);
     return init(pin);
   }
 
   bool powerOffImpl() {
-    sendAT(F("+GSLP=0"));  // Power down indefinitely - until manually reset!
+    sendAT(GF("+GSLP=0"));  // Power down indefinitely - until manually reset!
     return waitResponse() == 1;
   }
 
@@ -203,18 +204,18 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
    */
  public:
   RegStatus getRegistrationStatus() {
-    sendAT(F("+CIPSTATUS"));
-    if (waitResponse(3000, F("STATUS:")) != 1) return REG_UNKNOWN;
-    int8_t status = waitResponse(GFP(GSM_ERROR), F("2"), F("3"), F("4"),
-                                 F("5"));
+    sendAT(GF("+CIPSTATUS"));
+    if (waitResponse(3000, GF("STATUS:")) != 1) return REG_UNKNOWN;
+    int8_t status = waitResponse(GFP(AT_ERROR), GF("2"), GF("3"), GF("4"),
+                                 GF("5"));
     waitResponse();  // Returns an OK after the status
     return (RegStatus)status;
   }
 
  protected:
   int8_t getSignalQualityImpl() {
-    sendAT(F("+CWJAP_CUR?"));
-    int8_t res1 = waitResponse(F("No AP"), F("+CWJAP_CUR:"));
+    sendAT(GF("+CWJAP_CUR?"));
+    int8_t res1 = waitResponse(GF("No AP"), GF("+CWJAP_CUR:"));
     if (res1 != 2) {
       waitResponse();
       return 0;
@@ -245,8 +246,8 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
   }
 
   String getLocalIPImpl() {
-    sendAT(F("+CIPSTA_CUR?"));
-    int8_t res1 = waitResponse(F("ERROR"), F("+CWJAP_CUR:"));
+    sendAT(GF("+CIPSTA_CUR?"));
+    int8_t res1 = waitResponse(GF("ERROR"), GF("+CWJAP_CUR:"));
     if (res1 != 2) { return ""; }
     String res2 = stream.readStringUntil('"');
     waitResponse();
@@ -258,8 +259,8 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
    */
  protected:
   bool networkConnectImpl(const char* ssid, const char* pwd) {
-    sendAT(F("+CWJAP_CUR=\""), ssid, F("\",\""), pwd, F("\""));
-    if (waitResponse(30000L, GFP(GSM_OK), F(CRLF "FAIL" CRLF)) != 1) {
+    sendAT(GF("+CWJAP_CUR=\""), ssid, GF("\",\""), pwd, GF("\""));
+    if (waitResponse(30000L, GFP(AT_OK), GF("\r\nFAIL\r\n")) != 1) {
       return false;
     }
 
@@ -267,9 +268,9 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
   }
 
   bool networkDisconnectImpl() {
-    sendAT(F("+CWQAP"));
+    sendAT(GF("+CWQAP"));
     bool retVal = waitResponse(10000L) == 1;
-    waitResponse(F("WIFI DISCONNECT"));
+    waitResponse(GF("WIFI DISCONNECT"));
     return retVal;
   }
 
@@ -281,34 +282,34 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
                     bool ssl = false, int timeout_s = 75) {
     uint32_t timeout_ms = ((uint32_t)timeout_s) * 1000;
     if (ssl) {
-      sendAT(F("+CIPSSLSIZE=4096"));
+      sendAT(GF("+CIPSSLSIZE=4096"));
       waitResponse();
     }
-    sendAT(F("+CIPSTART="), mux, ',', ssl ? F("\"SSL") : F("\"TCP"),
-           F("\",\""), host, F("\","), port, F(","),
+    sendAT(GF("+CIPSTART="), mux, ',', ssl ? GF("\"SSL") : GF("\"TCP"),
+           GF("\",\""), host, GF("\","), port, GF(","),
            SIMPLE_WIFI_TCP_KEEP_ALIVE);
     // TODO(?): Check mux
-    int8_t rsp = waitResponse(timeout_ms, GFP(GSM_OK), GFP(GSM_ERROR),
-                              F("ALREADY CONNECT"));
+    int8_t rsp = waitResponse(timeout_ms, GFP(AT_OK), GFP(AT_ERROR),
+                              GF("ALREADY CONNECT"));
     // if (rsp == 3) waitResponse();
     // May return "ERROR" after the "ALREADY CONNECT"
     return (1 == rsp);
   }
 
   int16_t modemSend(const void* buff, size_t len, uint8_t mux) {
-    sendAT(F("+CIPSEND="), mux, ',', (uint16_t)len);
-    if (waitResponse(F(">")) != 1) { return 0; }
+    sendAT(GF("+CIPSEND="), mux, ',', (uint16_t)len);
+    if (waitResponse(GF(">")) != 1) { return 0; }
     stream.write(reinterpret_cast<const uint8_t*>(buff), len);
     stream.flush();
-    if (waitResponse(10000L, F(CRLF "SEND OK" CRLF)) != 1) { return 0; }
+    if (waitResponse(10000L, GF("\r\nSEND OK\r\n")) != 1) { return 0; }
     return len;
   }
 
   bool modemGetConnected(uint8_t mux) {
-    sendAT(F("+CIPSTATUS"));
-    if (waitResponse(3000, F("STATUS:")) != 1) { return false; }
-    int8_t status = waitResponse(GFP(GSM_ERROR), F("2"), F("3"), F("4"),
-                                 F("5"));
+    sendAT(GF("+CIPSTATUS"));
+    if (waitResponse(3000, GF("STATUS:")) != 1) { return false; }
+    int8_t status = waitResponse(GFP(AT_ERROR), GF("2"), GF("3"), GF("4"),
+                                 GF("5"));
     if (status != 3) {
       // if the status is anything but 3, there are no connections open
       waitResponse();  // Returns an OK after the status
@@ -319,8 +320,8 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
     }
     bool verified_connections[SIMPLE_WIFI_MUX_COUNT] = {0, 0, 0, 0, 0};
     for (int muxNo = 0; muxNo < SIMPLE_WIFI_MUX_COUNT; muxNo++) {
-      uint8_t has_status = waitResponse(F("+CIPSTATUS:"), GFP(GSM_OK),
-                                        GFP(GSM_ERROR));
+      uint8_t has_status = waitResponse(GF("+CIPSTATUS:"), GFP(AT_OK),
+                                        GFP(AT_ERROR));
       if (has_status == 1) {
         int8_t returned_mux = streamGetIntBefore(',');
         streamSkipUntil(',');   // Skip mux
@@ -347,9 +348,9 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
  public:
   // TODO(vshymanskyy): Optimize this!
   int8_t waitResponse(uint32_t timeout_ms, String& data,
-                      __FlashStringHelper* r1 = GFP(GSM_OK),
-                      __FlashStringHelper* r2 = GFP(GSM_ERROR), __FlashStringHelper* r3 = NULL,
-                      __FlashStringHelper* r4 = NULL, __FlashStringHelper* r5 = NULL) {
+                      FlashConstStr r1 = GFP(AT_OK),
+                      FlashConstStr r2 = GFP(AT_ERROR), FlashConstStr r3 = NULL,
+                      FlashConstStr r4 = NULL, FlashConstStr r5 = NULL) {
     /*String r1s(r1); r1s.trim();
     String r2s(r2); r2s.trim();
     String r3s(r3); r3s.trim();
@@ -381,7 +382,7 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
         } else if (r5 && data.endsWith(r5)) {
           index = 5;
           goto finish;
-        } else if (data.endsWith(F("+IPD,"))) {
+        } else if (data.endsWith(GF("+IPD,"))) {
           int8_t  mux      = streamGetIntBefore(',');
           int16_t len      = streamGetIntBefore(':');
           int16_t len_orig = len;
@@ -400,9 +401,9 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
             }
           }
           data = "";
-        } else if (data.endsWith(F("CLOSED"))) {
+        } else if (data.endsWith(GF("CLOSED"))) {
           int8_t muxStart =
-              SimpleWiFiMax(0, data.lastIndexOf(CRLF, data.length() - 8));
+              SimpleWiFiMax(0, data.lastIndexOf(AT_NL, data.length() - 8));
           int8_t coma = data.indexOf(',', muxStart);
           int8_t mux  = data.substring(muxStart, coma).toInt();
           if (mux >= 0 && mux < SIMPLE_WIFI_MUX_COUNT && sockets[mux]) {
@@ -419,21 +420,21 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
       if (data.length()) { DBG("### Unhandled:", data); }
       data = "";
     }
-    // data.replace(CRLF, "/");
+    // data.replace(AT_NL, "/");
     // DBG('<', index, '>', data);
     return index;
   }
 
-  int8_t waitResponse(uint32_t timeout_ms, __FlashStringHelper* r1 = GFP(GSM_OK),
-                      __FlashStringHelper* r2 = GFP(GSM_ERROR), __FlashStringHelper* r3 = NULL,
-                      __FlashStringHelper* r4 = NULL, __FlashStringHelper* r5 = NULL) {
+  int8_t waitResponse(uint32_t timeout_ms, FlashConstStr r1 = GFP(AT_OK),
+                      FlashConstStr r2 = GFP(AT_ERROR), FlashConstStr r3 = NULL,
+                      FlashConstStr r4 = NULL, FlashConstStr r5 = NULL) {
     String data;
     return waitResponse(timeout_ms, data, r1, r2, r3, r4, r5);
   }
 
-  int8_t waitResponse(__FlashStringHelper* r1 = GFP(GSM_OK),
-                      __FlashStringHelper* r2 = GFP(GSM_ERROR), __FlashStringHelper* r3 = NULL,
-                      __FlashStringHelper* r4 = NULL, __FlashStringHelper* r5 = NULL) {
+  int8_t waitResponse(FlashConstStr r1 = GFP(AT_OK),
+                      FlashConstStr r2 = GFP(AT_ERROR), FlashConstStr r3 = NULL,
+                      FlashConstStr r4 = NULL, FlashConstStr r5 = NULL) {
     return waitResponse(1000, r1, r2, r3, r4, r5);
   }
 
@@ -442,7 +443,7 @@ class SimpleWiFiESP8266 : public SimpleWiFiModem<SimpleWiFiESP8266>,
 
  protected:
   WiFiClientESP8266* sockets[SIMPLE_WIFI_MUX_COUNT];
-  const char*       crlf = CRLF;
+  const char* wifiLinefeed = AT_NL;
 };
 
 #endif  // SRC_SIMPLEWIFICLIENTESP8266_H_

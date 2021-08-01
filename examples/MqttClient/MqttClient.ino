@@ -15,10 +15,10 @@
  * You can quickly test sending and receiving messages from the HiveMQ webclient
  * available at http://www.hivemq.com/demos/websocket-client/.
  *
- * Subscribe to the topic GsmClientTest/ledStatus
- * Publish "toggle" to the topic GsmClientTest/led and the LED on your board
+ * Subscribe to the topic WiFiClientTest/ledStatus
+ * Publish "toggle" to the topic WiFiClientTest/led and the LED on your board
  * should toggle and you should see a new message published to
- * GsmClientTest/ledStatus with the newest LED status.
+ * WiFiClientTest/ledStatus with the newest LED status.
  *
  **************************************************************/
 
@@ -95,9 +95,9 @@ const char wifiPass[] = "YourWiFiPass";
 // MQTT details
 const char* broker = "broker.hivemq.com";
 
-const char* topicLed       = "GsmClientTest/led";
-const char* topicInit      = "GsmClientTest/init";
-const char* topicLedStatus = "GsmClientTest/ledStatus";
+const char* topicLed       = "WiFiClientTest/led";
+const char* topicInit      = "WiFiClientTest/init";
+const char* topicLedStatus = "WiFiClientTest/ledStatus";
 
 #include <SimpleWiFiClient.h>
 #include <PubSubClient.h>
@@ -151,17 +151,17 @@ boolean mqttConnect() {
   SerialMon.print(broker);
 
   // Connect to MQTT Broker
-  boolean status = mqtt.connect("GsmClientTest");
+  boolean status = mqtt.connect("WiFiClientTest");
 
   // Or, if you want to authenticate MQTT:
-  // boolean status = mqtt.connect("GsmClientName", "mqtt_user", "mqtt_pass");
+  // boolean status = mqtt.connect("WiFiClientName", "mqtt_user", "mqtt_pass");
 
   if (status == false) {
     SerialMon.println(" fail");
     return false;
   }
   SerialMon.println(" success");
-  mqtt.publish(topicInit, "GsmClientTest started");
+  mqtt.publish(topicInit, "WiFiClientTest started");
   mqtt.subscribe(topicLed);
   return mqtt.connected();
 }
@@ -202,7 +202,7 @@ void setup() {
 
 #if SIMPLE_WIFI_USE_WIFI
   // Wifi connection parameters must be set before waiting for the network
-  SerialMon.print(F("Setting SSID/password..."));
+  SerialMon.print(GF("Setting SSID/password..."));
   if (!modem.networkConnect(wifiSSID, wifiPass)) {
     SerialMon.println(" fail");
     delay(10000);
@@ -228,7 +228,7 @@ void setup() {
 
 #if SIMPLE_WIFI_USE_GPRS
   // GPRS connection parameters are usually set after network registration
-  SerialMon.print(F("Connecting to "));
+  SerialMon.print(GF("Connecting to "));
   SerialMon.print(apn);
   if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
     SerialMon.println(" fail");
@@ -262,7 +262,7 @@ void loop() {
     // and make sure GPRS/EPS is still connected
     if (!modem.isGprsConnected()) {
       SerialMon.println("GPRS disconnected!");
-      SerialMon.print(F("Connecting to "));
+      SerialMon.print(GF("Connecting to "));
       SerialMon.print(apn);
       if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
         SerialMon.println(" fail");

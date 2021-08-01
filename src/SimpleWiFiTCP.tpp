@@ -67,7 +67,7 @@ class SimpleWiFiTCP {
    * Inner Client
    */
  public:
-  class GsmClient : public Client {
+  class WiFiClient : public Client {
     // Make all classes created from the modem template friends
     friend class SimpleWiFiTCP<modemType, muxCount>;
     typedef SimpleWiFiFifo<uint8_t, SIMPLE_WIFI_RX_BUFFER> RxFifo;
@@ -325,7 +325,7 @@ class SimpleWiFiTCP {
     // Keep listening for modem URC's and proactively iterate through
     // sockets asking if any data is avaiable
     for (int mux = 0; mux < muxCount; mux++) {
-      GsmClient* sock = thisModem().sockets[mux];
+      WiFiClient* sock = thisModem().sockets[mux];
       if (sock && sock->got_data) {
         sock->got_data       = false;
         sock->sock_available = thisModem().modemGetAvailable(mux);

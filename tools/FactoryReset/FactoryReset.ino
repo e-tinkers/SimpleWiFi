@@ -55,20 +55,20 @@ void setup() {
   delay(6000);
 
   if (!modem.init()) {
-    SerialMon.println(F("***********************************************************"));
-    SerialMon.println(F(" Cannot initialize modem!"));
-    SerialMon.println(F("   Use File -> Examples -> TinyGSM -> tools -> AT_Debug"));
-    SerialMon.println(F("   to find correct configuration"));
-    SerialMon.println(F("***********************************************************"));
+    SerialMon.println(GF("***********************************************************"));
+    SerialMon.println(GF(" Cannot initialize modem!"));
+    SerialMon.println(GF("   Use File -> Examples -> TinyGSM -> tools -> AT_Debug"));
+    SerialMon.println(GF("   to find correct configuration"));
+    SerialMon.println(GF("***********************************************************"));
     return;
   }
 
   bool ret = modem.factoryDefault();
 
-  SerialMon.println(F("***********************************************************"));
-  SerialMon.print  (F(" Return settings to Factory Defaults: "));
+  SerialMon.println(GF("***********************************************************"));
+  SerialMon.print  (GF(" Return settings to Factory Defaults: "));
   SerialMon.println((ret) ? "OK" : "FAIL");
-  SerialMon.println(F("***********************************************************"));
+  SerialMon.println(GF("***********************************************************"));
 }
 
 void loop() {

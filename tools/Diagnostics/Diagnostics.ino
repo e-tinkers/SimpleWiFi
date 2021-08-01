@@ -146,18 +146,18 @@ void loop() {
   SerialMon.print("Initializing modem...");
   if (!modem.restart()) {
     // if (!modem.init()) {
-    SerialMon.println(F(" [fail]"));
-    SerialMon.println(F("************************"));
-    SerialMon.println(F(" Is your modem connected properly?"));
-    SerialMon.println(F(" Is your serial speed (baud rate) correct?"));
-    SerialMon.println(F(" Is your modem powered on?"));
-    SerialMon.println(F(" Do you use a good, stable power source?"));
-    SerialMon.println(F(" Try using File -> Examples -> TinyGSM -> tools -> AT_Debug to find correct configuration"));
-    SerialMon.println(F("************************"));
+    SerialMon.println(GF(" [fail]"));
+    SerialMon.println(GF("************************"));
+    SerialMon.println(GF(" Is your modem connected properly?"));
+    SerialMon.println(GF(" Is your serial speed (baud rate) correct?"));
+    SerialMon.println(GF(" Is your modem powered on?"));
+    SerialMon.println(GF(" Do you use a good, stable power source?"));
+    SerialMon.println(GF(" Try using File -> Examples -> TinyGSM -> tools -> AT_Debug to find correct configuration"));
+    SerialMon.println(GF("************************"));
     delay(10000);
     return;
   }
-  SerialMon.println(F(" [OK]"));
+  SerialMon.println(GF(" [OK]"));
 
   String modemInfo = modem.getModemInfo();
   SerialMon.print("Modem Info: ");
@@ -170,7 +170,7 @@ void loop() {
 
 #if SIMPLE_WIFI_USE_WIFI
   // Wifi connection parameters must be set before waiting for the network
-  SerialMon.print(F("Setting SSID/password..."));
+  SerialMon.print(GF("Setting SSID/password..."));
   if (!modem.networkConnect(wifiSSID, wifiPass)) {
     SerialMon.println(" fail");
     delay(10000);
@@ -187,46 +187,46 @@ void loop() {
   SerialMon.print("Waiting for network...");
   if (!modem.waitForNetwork(
           600000L)) {  // You may need lengthen this in poor service areas
-    SerialMon.println(F(" [fail]"));
-    SerialMon.println(F("************************"));
-    SerialMon.println(F(" Is your sim card locked?"));
-    SerialMon.println(F(" Do you have a good signal?"));
-    SerialMon.println(F(" Is antenna attached?"));
-    SerialMon.println(F(" Does the SIM card work with your phone?"));
-    SerialMon.println(F("************************"));
+    SerialMon.println(GF(" [fail]"));
+    SerialMon.println(GF("************************"));
+    SerialMon.println(GF(" Is your sim card locked?"));
+    SerialMon.println(GF(" Do you have a good signal?"));
+    SerialMon.println(GF(" Is antenna attached?"));
+    SerialMon.println(GF(" Does the SIM card work with your phone?"));
+    SerialMon.println(GF("************************"));
     delay(10000);
     return;
   }
-  SerialMon.println(F(" [OK]"));
+  SerialMon.println(GF(" [OK]"));
 
 #if SIMPLE_WIFI_USE_GPRS
   // GPRS connection parameters are usually set after network registration
   SerialMon.print("Connecting to ");
   SerialMon.print(apn);
   if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
-    SerialMon.println(F(" [fail]"));
-    SerialMon.println(F("************************"));
-    SerialMon.println(F(" Is GPRS enabled by network provider?"));
-    SerialMon.println(F(" Try checking your card balance."));
-    SerialMon.println(F("************************"));
+    SerialMon.println(GF(" [fail]"));
+    SerialMon.println(GF("************************"));
+    SerialMon.println(GF(" Is GPRS enabled by network provider?"));
+    SerialMon.println(GF(" Try checking your card balance."));
+    SerialMon.println(GF("************************"));
     delay(10000);
     return;
   }
-  SerialMon.println(F(" [OK]"));
+  SerialMon.println(GF(" [OK]"));
 #endif
 
   IPAddress local = modem.localIP();
   SerialMon.print("Local IP: ");
   SerialMon.println(local);
 
-  SerialMon.print(F("Connecting to "));
+  SerialMon.print(GF("Connecting to "));
   SerialMon.print(server);
   if (!client.connect(server, port)) {
-    SerialMon.println(F(" [fail]"));
+    SerialMon.println(GF(" [fail]"));
     delay(10000);
     return;
   }
-  SerialMon.println(F(" [OK]"));
+  SerialMon.println(GF(" [OK]"));
 
   // Make a HTTP GET request:
   client.print(String("GET ") + resource + " HTTP/1.0\r\n");
@@ -256,25 +256,25 @@ void loop() {
   }
 
   client.stop();
-  SerialMon.println(F("Server disconnected"));
+  SerialMon.println(GF("Server disconnected"));
 
 #if SIMPLE_WIFI_USE_WIFI
   modem.networkDisconnect();
-  SerialMon.println(F("WiFi disconnected"));
+  SerialMon.println(GF("WiFi disconnected"));
 #endif
 #if SIMPLE_WIFI_USE_GPRS
   modem.gprsDisconnect();
-  SerialMon.println(F("GPRS disconnected"));
+  SerialMon.println(GF("GPRS disconnected"));
 #endif
 
   SerialMon.println();
-  SerialMon.println(F("************************"));
-  SerialMon.print(F(" Received: "));
+  SerialMon.println(GF("************************"));
+  SerialMon.print(GF(" Received: "));
   SerialMon.print(bytesReceived);
-  SerialMon.println(F(" bytes"));
-  SerialMon.print(F(" Test:     "));
+  SerialMon.println(GF(" bytes"));
+  SerialMon.print(GF(" Test:     "));
   SerialMon.println((bytesReceived == 121) ? "PASSED" : "FAILED");
-  SerialMon.println(F("************************"));
+  SerialMon.println(GF("************************"));
 
   // Do nothing forevermore
   while (true) { delay(1000); }

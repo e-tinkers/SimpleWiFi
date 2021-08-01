@@ -30,9 +30,9 @@
 #include "SimpleWiFiTemperature.tpp"
 #include "SimpleWiFiWifi.tpp"
 
-#define CRLF "\r"
-static const char GSM_OK[] SIMPLE_WIFI_PROGMEM    = "OK" CRLF;
-static const char GSM_ERROR[] SIMPLE_WIFI_PROGMEM = "ERROR" CRLF;
+#define AT_NL "\r"
+static const char AT_OK[] SIMPLE_WIFI_PROGMEM    = "OK\r";
+static const char AT_ERROR[] SIMPLE_WIFI_PROGMEM = "ERROR\r";
 
 // Use this to avoid too many entrances and exits from command mode.
 // The cellular Bee's often freeze up and won't respond when attempting
@@ -87,13 +87,13 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
    * Inner Client
    */
  public:
-  class GsmClientXBee : public GsmClient {
+  class WiFiClientXBee : public WiFiClient {
     friend class SimpleWiFiXBee;
 
    public:
-    GsmClientXBee() {}
+    WiFiClientXBee() {}
 
-    explicit GsmClientXBee(SimpleWiFiXBee& modem, uint8_t mux = 0) {
+    explicit WiFiClientXBee(SimpleWiFiXBee& modem, uint8_t mux = 0) {
       init(&modem, mux);
     }
 
@@ -249,12 +249,12 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
    * Inner Secure Client
    */
  public:
-  class GsmClientSecureXBee : public GsmClientXBee {
+  class WiFiClientSecureXBee : public WiFiClientXBee {
    public:
-    GsmClientSecureXBee() {}
+    WiFiClientSecureXBee() {}
 
-    explicit GsmClientSecureXBee(SimpleWiFiXBee& modem, uint8_t mux = 0)
-        : GsmClientXBee(modem, mux) {}
+    explicit WiFiClientSecureXBee(SimpleWiFiXBee& modem, uint8_t mux = 0)
+        : WiFiClientXBee(modem, mux) {}
 
    public:
     int connect(const char* host, uint16_t port, int timeout_s) override {
@@ -321,8 +321,8 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
    */
 
   bool initImpl(const char* pin = NULL) {
-    DBG(F("### TinyGSM Version:"), SIMPLEWIFI_VERSION);
-    DBG(F("### TinyGSM Compiled Module:  SimpleWiFiClientXBee"));
+    DBG(GF("### TinyGSM Version:"), SIMPLEWIFI_VERSION);
+    DBG(GF("### TinyGSM Compiled Module:  SimpleWiFiClientXBee"));
 
     if (resetPin >= 0) {
       pinMode(resetPin, OUTPUT);
@@ -336,7 +336,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
 
     // if there's a pin, we need to re-write to flash each time
     if (pin && strlen(pin) > 0) {
-      sendAT(F("PN"), pin);
+      sendAT(GF("PN"), pin);
       if (waitResponse() != 1) {
         ret_val = false;
       } else {
@@ -345,12 +345,12 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     }
 
     // Put in transparent mode, if it isn't already
-    changesMade |= changeSettingIfNeeded(F("AP"), 0x0);
+    changesMade |= changeSettingIfNeeded(GF("AP"), 0x0);
 
     // shorten the guard time to 100ms, if it was anything else
-    sendAT(F("GT"));
+    sendAT(GF("GT"));
     if (readResponseInt() != 0x64) {
-      sendAT(F("GT"), 64);
+      sendAT(GF("GT"), 64);
       ret_val &= waitResponse() == 1;
       if (ret_val) {
         guardTime   = 110;
@@ -363,7 +363,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     // Make sure the command mode drop-out time is long enough that we won't
     // fall out of command mode without intentionally leaving it.  This is the
     // default drop out time of 0x64 x 100ms (10 seconds)
-    changesMade |= changeSettingIfNeeded(F("CT"), 0x64);
+    changesMade |= changeSettingIfNeeded(GF("CT"), 0x64);
 
     if (changesMade) { ret_val &= writeChanges(); }
 
@@ -382,19 +382,19 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     XBEE_COMMAND_START_DECORATOR(5, )
     bool changesMade = false;
     switch (baud) {
-      case 2400: changesMade |= changeSettingIfNeeded(F("BD"), 0x1); break;
-      case 4800: changesMade |= changeSettingIfNeeded(F("BD"), 0x2); break;
-      case 9600: changesMade |= changeSettingIfNeeded(F("BD"), 0x3); break;
-      case 19200: changesMade |= changeSettingIfNeeded(F("BD"), 0x4); break;
-      case 38400: changesMade |= changeSettingIfNeeded(F("BD"), 0x5); break;
-      case 57600: changesMade |= changeSettingIfNeeded(F("BD"), 0x6); break;
-      case 115200: changesMade |= changeSettingIfNeeded(F("BD"), 0x7); break;
-      case 230400: changesMade |= changeSettingIfNeeded(F("BD"), 0x8); break;
-      case 460800: changesMade |= changeSettingIfNeeded(F("BD"), 0x9); break;
-      case 921600: changesMade |= changeSettingIfNeeded(F("BD"), 0xA); break;
+      case 2400: changesMade |= changeSettingIfNeeded(GF("BD"), 0x1); break;
+      case 4800: changesMade |= changeSettingIfNeeded(GF("BD"), 0x2); break;
+      case 9600: changesMade |= changeSettingIfNeeded(GF("BD"), 0x3); break;
+      case 19200: changesMade |= changeSettingIfNeeded(GF("BD"), 0x4); break;
+      case 38400: changesMade |= changeSettingIfNeeded(GF("BD"), 0x5); break;
+      case 57600: changesMade |= changeSettingIfNeeded(GF("BD"), 0x6); break;
+      case 115200: changesMade |= changeSettingIfNeeded(GF("BD"), 0x7); break;
+      case 230400: changesMade |= changeSettingIfNeeded(GF("BD"), 0x8); break;
+      case 460800: changesMade |= changeSettingIfNeeded(GF("BD"), 0x9); break;
+      case 921600: changesMade |= changeSettingIfNeeded(GF("BD"), 0xA); break;
       default: {
-        DBG(F("Specified baud rate is unsupported! Setting to 9600 baud."));
-        changesMade |= changeSettingIfNeeded(F("BD"),
+        DBG(GF("Specified baud rate is unsupported! Setting to 9600 baud."));
+        changesMade |= changeSettingIfNeeded(GF("BD"),
                                              0x3);  // Set to default of 9600
         break;
       }
@@ -438,7 +438,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
 
   bool factoryDefaultImpl() {
     XBEE_COMMAND_START_DECORATOR(5, false)
-    sendAT(F("RE"));
+    sendAT(GF("RE"));
     bool ret_val = waitResponse() == 1;
     ret_val &= writeChanges();
     XBEE_COMMAND_END_DECORATOR
@@ -449,7 +449,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
   }
 
   String getModemInfoImpl() {
-    return sendATGetString(F("HS"));
+    return sendATGetString(GF("HS"));
   }
 
   /*
@@ -512,14 +512,14 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     if (beeType == XBEE_UNKNOWN) getSeries();  // how we restart depends on this
 
     if (beeType != XBEE_S6B_WIFI) {
-      sendAT(F("AM1"));  // Digi suggests putting cellular modules into
+      sendAT(GF("AM1"));  // Digi suggests putting cellular modules into
                           // airplane mode before restarting This allows the
                           // sockets and connections to close cleanly
       if (waitResponse() != 1) return exitAndFail();
       if (!writeChanges()) return exitAndFail();
     }
 
-    sendAT(F("FR"));
+    sendAT(GF("FR"));
     if (waitResponse() != 1)
       return exitAndFail();
     else
@@ -537,7 +537,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     }
 
     if (beeType != XBEE_S6B_WIFI) {
-      sendAT(F("AM0"));  // Turn off airplane mode
+      sendAT(GF("AM0"));  // Turn off airplane mode
       if (waitResponse() != 1) return exitAndFail();
       if (!writeChanges()) return exitAndFail();
     }
@@ -555,15 +555,15 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     bool changesMade = false;
 
     // Pin sleep
-    changesMade |= changeSettingIfNeeded(F("SM"), 0x1);
+    changesMade |= changeSettingIfNeeded(GF("SM"), 0x1);
 
     if (beeType == XBEE_S6B_WIFI && !maintainAssociation) {
       // For lowest power, dissassociated deep sleep
-      changesMade |= changeSettingIfNeeded(F("SO"), 0x200);
+      changesMade |= changeSettingIfNeeded(GF("SO"), 0x200);
     } else if (!maintainAssociation) {
       // For supported cellular modules, maintain association
       // Not supported by all modules, will return "ERROR"
-      changesMade |= changeSettingIfNeeded(F("SO"), 0x1);
+      changesMade |= changeSettingIfNeeded(GF("SO"), 0x1);
     }
 
     if (changesMade) { writeChanges(); }
@@ -573,10 +573,10 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
   bool
   powerOffImpl() {  // NOTE:  Not supported for WiFi or older cellular firmware
     XBEE_COMMAND_START_DECORATOR(5, false)
-    sendAT(F("SD"));
+    sendAT(GF("SD"));
     bool ret_val = waitResponse(120000L) == 1;
     // make sure we're really shut down
-    if (ret_val) { ret_val &= (sendATGetString(F("AI")) == "2D"); }
+    if (ret_val) { ret_val &= (sendATGetString(GF("AI")) == "2D"); }
     XBEE_COMMAND_END_DECORATOR
     return ret_val;
   }
@@ -586,7 +586,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     bool success     = true;
     bool changesMade = false;
     XBEE_COMMAND_START_DECORATOR(5, false)
-    changesMade = changeSettingIfNeeded(F("AM"), 0x1, 5000L);
+    changesMade = changeSettingIfNeeded(GF("AM"), 0x1, 5000L);
     if (changesMade) { success = writeChanges(); }
     XBEE_COMMAND_END_DECORATOR
     return success;
@@ -609,7 +609,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     if (beeType == XBEE_UNKNOWN)
       getSeries();  // Need to know the bee type to interpret response
 
-    sendAT(F("AI"));
+    sendAT(GF("AI"));
     int16_t   intRes = readResponseInt(10000L);
     RegStatus stat   = REG_UNKNOWN;
 
@@ -669,13 +669,13 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
             stat = REG_DENIED;
             break;
           case 0x2A:            // 0x2A Airplane mode.
-            sendAT(F("AM0"));  // Turn off airplane mode
+            sendAT(GF("AM0"));  // Turn off airplane mode
             waitResponse();
             writeChanges();
             stat = REG_UNKNOWN;
             break;
           case 0x2F:            // 0x2F Bypass mode active.
-            sendAT(F("AP0"));  // Set back to transparent mode
+            sendAT(GF("AP0"));  // Set back to transparent mode
             waitResponse();
             writeChanges();
             stat = REG_UNKNOWN;
@@ -698,9 +698,9 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
       getSeries();  // Need to know what type of bee so we know how to ask
 
     if (beeType == XBEE_S6B_WIFI)
-      sendAT(F("LM"));  // ask for the "link margin" - the dB above sensitivity
+      sendAT(GF("LM"));  // ask for the "link margin" - the dB above sensitivity
     else
-      sendAT(F("DB"));  // ask for the cell strength in dBm
+      sendAT(GF("DB"));  // ask for the cell strength in dBm
     int16_t intRes = readResponseInt();
 
     XBEE_COMMAND_END_DECORATOR
@@ -751,7 +751,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
 
   String getLocalIPImpl() {
     XBEE_COMMAND_START_DECORATOR(5, "")
-    sendAT(F("MY"));
+    sendAT(GF("MY"));
     String IPaddr;
     IPaddr.reserve(16);
     // wait for the response - this response can be very slow
@@ -773,23 +773,23 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
 
     if (ssid == NULL) retVal = false;
 
-    changesMade |= changeSettingIfNeeded(F("ID"), ssid);
+    changesMade |= changeSettingIfNeeded(GF("ID"), ssid);
 
     if (pwd && strlen(pwd) > 0) {
       // Set security to WPA2
-      changesMade |= changeSettingIfNeeded(F("EE"), 0x2);
+      changesMade |= changeSettingIfNeeded(GF("EE"), 0x2);
       // set the password
       // the wifi bee will NOT return the previously set password,
       // so we have no way of knowing if the passwords has changed
       // and must re-write to flash each time
-      sendAT(F("PK"), pwd);
+      sendAT(GF("PK"), pwd);
       if (waitResponse() != 1) {
         retVal = false;
       } else {
         changesMade = true;
       }
     } else {
-      changesMade |= changeSettingIfNeeded(F("EE"), 0x0);  // Set No security
+      changesMade |= changeSettingIfNeeded(GF("EE"), 0x0);  // Set No security
     }
 
     if (changesMade) { retVal &= writeChanges(); }
@@ -801,7 +801,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
 
   bool networkDisconnectImpl() {
     XBEE_COMMAND_START_DECORATOR(5, false)
-    sendAT(F("NR0"));  // Do a network reset in order to disconnect
+    sendAT(GF("NR0"));  // Do a network reset in order to disconnect
     // WARNING:  On wifi modules, using a network reset will not
     // allow the same ssid to re-join without rebooting the module.
     int8_t res = (1 == waitResponse(5000));
@@ -824,7 +824,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     // password, so we have no way of knowing if they have changed
     // and must re-write to flash each time
     if (user && strlen(user) > 0) {
-      sendAT(F("CU"), user);  // Set the user for the APN
+      sendAT(GF("CU"), user);  // Set the user for the APN
       if (waitResponse() != 1) {
         success = false;
       } else {
@@ -832,16 +832,16 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
       }
     }
     if (pwd && strlen(pwd) > 0) {
-      sendAT(F("CW"), pwd);  // Set the password for the APN
+      sendAT(GF("CW"), pwd);  // Set the password for the APN
       if (waitResponse() != 1) {
         success = false;
       } else {
         changesMade = true;
       }
     }
-    changesMade |= changeSettingIfNeeded(F("AN"), String(apn));  // Set the APN
+    changesMade |= changeSettingIfNeeded(GF("AN"), String(apn));  // Set the APN
 
-    changesMade |= changeSettingIfNeeded(F("AM"), 0x0,
+    changesMade |= changeSettingIfNeeded(GF("AM"), 0x0,
                                          5000L);  // Airplane mode off
 
     if (changesMade) { success = writeChanges(); }
@@ -853,7 +853,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     bool success = true;
     XBEE_COMMAND_START_DECORATOR(5, false)
     // Cheating and disconnecting by turning on airplane mode
-    bool changesMade = changeSettingIfNeeded(F("AM"), 0x1, 5000L);
+    bool changesMade = changeSettingIfNeeded(GF("AM"), 0x1, 5000L);
 
     if (changesMade) { success = writeChanges(); }
     XBEE_COMMAND_END_DECORATOR
@@ -865,7 +865,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
   }
 
   String getOperatorImpl() {
-    return sendATGetString(F("MN"));
+    return sendATGetString(GF("MN"));
   }
 
   /*
@@ -874,22 +874,22 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
  protected:
   bool simUnlockImpl(const char* pin) {
     if (pin && strlen(pin) > 0) {
-      sendAT(F("PN"), pin);
+      sendAT(GF("PN"), pin);
       return waitResponse() == 1;
     }
     return false;
   }
 
   String getSimCCIDImpl() {
-    return sendATGetString(F("S#"));
+    return sendATGetString(GF("S#"));
   }
 
   String getIMEIImpl() {
-    return sendATGetString(F("IM"));
+    return sendATGetString(GF("IM"));
   }
 
   String getIMSIImpl() {
-    return sendATGetString(F("II"));
+    return sendATGetString(GF("II"));
   }
 
   SimStatus getSimStatusImpl(uint32_t) {
@@ -906,9 +906,9 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     bool changesMade = false;
     if (!commandMode()) { return false; }  // Return immediately
 
-    sendAT(F("IP"));  // check mode
+    sendAT(GF("IP"));  // check mode
     if (readResponseInt() != 2) {
-      sendAT(F("IP"), 2);  // Put in text messaging mode
+      sendAT(GF("IP"), 2);  // Put in text messaging mode
       if (waitResponse() != 1) {
         return exitAndFail();
       } else {
@@ -916,9 +916,9 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
       }
     }
 
-    sendAT(F("PH"));  // check last number
+    sendAT(GF("PH"));  // check last number
     if (readResponseString() != String(number)) {
-      sendAT(F("PH"), number);  // Set the phone number
+      sendAT(GF("PH"), number);  // Set the phone number
       if (waitResponse() != 1) {
         return exitAndFail();
       } else {
@@ -926,9 +926,9 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
       }
     }
 
-    sendAT(F("TD"));  // check the text delimiter
+    sendAT(GF("TD"));  // check the text delimiter
     if (readResponseString() != String("D")) {
-      sendAT(F("TDD"));  // Set the text delimiter to the standard 0x0D
+      sendAT(GF("TDD"));  // Set the text delimiter to the standard 0x0D
                           //(carriage return)
       if (waitResponse() != 1) {
         return exitAndFail();
@@ -960,7 +960,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     XBEE_COMMAND_START_DECORATOR(5, false)
     if (beeType == XBEE_UNKNOWN) getSeries();
     if (beeType == XBEE_S6B_WIFI) {
-      sendAT(F("%V"));
+      sendAT(GF("%V"));
       intRes = readResponseInt();
     }
     XBEE_COMMAND_END_DECORATOR
@@ -984,7 +984,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
 
   float getTemperatureImpl() {
     XBEE_COMMAND_START_DECORATOR(5, static_cast<float>(-9999))
-    String res = sendATGetString(F("TP"));
+    String res = sendATGetString(GF("TP"));
     if (res == "") { return static_cast<float>(-9999); }
     char buf[5] = {
         0,
@@ -1003,7 +1003,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
  protected:
   int16_t getConnectionIndicator() {
     XBEE_COMMAND_START_DECORATOR(5, false)
-    sendAT(F("CI"));
+    sendAT(GF("CI"));
     int16_t intRes = readResponseInt();
     XBEE_COMMAND_END_DECORATOR
     return intRes;
@@ -1014,12 +1014,12 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     strIP.reserve(16);
 
     XBEE_COMMAND_START_DECORATOR(5, IPAddress(0, 0, 0, 0))
-    sendAT(F("OD"));
+    sendAT(GF("OD"));
     strIP = stream.readStringUntil('\r');  // read result
     strIP.trim();
     XBEE_COMMAND_END_DECORATOR
 
-    if (strIP != "" && strIP != F("ERROR")) {
+    if (strIP != "" && strIP != GF("ERROR")) {
       return SimpleWiFiIpFromString(strIP);
     } else {
       return IPAddress(0, 0, 0, 0);
@@ -1038,13 +1038,13 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     // name
     // NOTE: the lookup can take a while
     while ((millis() - startMillis) < timeout_ms) {
-      sendAT(F("LA"), host);
+      sendAT(GF("LA"), host);
       while (stream.available() < 4 && (millis() - startMillis < timeout_ms)) {
         SIMPLE_WIFI_YIELD()
       }
       strIP = stream.readStringUntil('\r');  // read result
       strIP.trim();
-      if (strIP != "" && strIP != F("ERROR")) {
+      if (strIP != "" && strIP != GF("ERROR")) {
         gotIP = true;
         break;
       }
@@ -1118,16 +1118,16 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
 
       if (ssl) {
         // Put in SSL over TCP communication mode
-        changesMade |= changeSettingIfNeeded(F("IP"), 0x4);
+        changesMade |= changeSettingIfNeeded(GF("IP"), 0x4);
       } else {
         // Put in TCP mode
-        changesMade |= changeSettingIfNeeded(F("IP"), 0x1);
+        changesMade |= changeSettingIfNeeded(GF("IP"), 0x1);
       }
 
       changesMade |= changeSettingIfNeeded(
-          F("DL"), String(host));  // Set the "Destination Address Low"
+          GF("DL"), String(host));  // Set the "Destination Address Low"
       changesMade |= changeSettingIfNeeded(
-          F("DE"), String(port, HEX));  // Set the destination port
+          GF("DE"), String(port, HEX));  // Set the destination port
 
       if (changesMade) { success &= writeChanges(); }
     }
@@ -1153,13 +1153,13 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     XBEE_COMMAND_START_DECORATOR(5, false)
 
     // Get the current socket timeout
-    sendAT(F("TM"));
+    sendAT(GF("TM"));
     String timeoutUsed = readResponseString(5000L);
 
     // For WiFi models, there's no direct way to close the socket.  This is a
     // hack to shut the socket by setting the timeout to zero.
     if (beeType == XBEE_S6B_WIFI) {
-      sendAT(F("TM0"));        // Set socket timeout to 0
+      sendAT(GF("TM0"));        // Set socket timeout to 0
       waitResponse(maxWaitMs);  // This response can be slow
       writeChanges();
     }
@@ -1167,7 +1167,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     // For cellular models, per documentation: If you write the TM (socket
     // timeout) value while in Transparent Mode, the current connection is
     // immediately closed - this works even if the TM values is unchanged
-    sendAT(F("TM"), timeoutUsed);  // Re-set socket timeout
+    sendAT(GF("TM"), timeoutUsed);  // Re-set socket timeout
     waitResponse(maxWaitMs);        // This response can be slow
     writeChanges();
 
@@ -1268,13 +1268,13 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
             }
 
             // // Ask for information about any open sockets
-            // sendAT(F("SI"));
+            // sendAT(GF("SI"));
             // String open_socks = stream.readStringUntil('\r');
-            // open_socks.replace(CRLF, "");
+            // open_socks.replace(AT_NL, "");
             // open_socks.trim();
             // if (open_socks != "") {
             //   // In transparent mode, only socket 0 should be possible
-            //   sendAT(F("SI0"));
+            //   sendAT(GF("SI0"));
             //   // read socket it
             //   String sock_id = stream.readStringUntil('\r');
             //   // read socket state
@@ -1298,9 +1298,9 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
           // we force close so it can reopen
           case 0x21:
           case 0x27: {
-            sendAT(F("TM"));  // Get socket timeout
+            sendAT(GF("TM"));  // Get socket timeout
             String timeoutUsed = readResponseString(5000L);
-            sendAT(F("TM"), timeoutUsed);  // Re-set socket timeout
+            sendAT(GF("TM"), timeoutUsed);  // Re-set socket timeout
             waitResponse(5000L);            // This response can be slow
           }
 
@@ -1343,9 +1343,9 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
   // waiting for requested responses.  The XBee has no unsoliliced responses
   // (URC's) when in command mode.
   int8_t waitResponse(uint32_t timeout_ms, String& data,
-                      __FlashStringHelper* r1 = GFP(GSM_OK),
-                      __FlashStringHelper* r2 = GFP(GSM_ERROR), __FlashStringHelper* r3 = NULL,
-                      __FlashStringHelper* r4 = NULL, __FlashStringHelper* r5 = NULL) {
+                      FlashConstStr r1 = GFP(AT_OK),
+                      FlashConstStr r2 = GFP(AT_ERROR), FlashConstStr r3 = NULL,
+                      FlashConstStr r4 = NULL, FlashConstStr r5 = NULL) {
     /*String r1s(r1); r1s.trim();
     String r2s(r2); r2s.trim();
     String r3s(r3); r3s.trim();
@@ -1383,8 +1383,8 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
   finish:
     if (!index) {
       data.trim();
-      data.replace(CRLF CRLF, CRLF);
-      data.replace(CRLF, "\r\n    ");
+      data.replace("\r\r", AT_NL);
+      data.replace(AT_NL, "\r\n    ");
       if (data.length()) {
         DBG("### Unhandled:", data, "\r\n");
       } else {
@@ -1392,24 +1392,24 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
       }
     } else {
       data.trim();
-      data.replace(CRLF CRLF, CRLF);
-      data.replace(CRLF, "\r\n    ");
+      data.replace("\r\r", AT_NL);
+      data.replace(AT_NL, "\r\n    ");
     }
-    // data.replace(CRLF, "/");
+    // data.replace(AT_NL, "/");
     // DBG('<', index, '>', data);
     return index;
   }
 
-  int8_t waitResponse(uint32_t timeout_ms, __FlashStringHelper* r1 = GFP(GSM_OK),
-                      __FlashStringHelper* r2 = GFP(GSM_ERROR), __FlashStringHelper* r3 = NULL,
-                      __FlashStringHelper* r4 = NULL, __FlashStringHelper* r5 = NULL) {
+  int8_t waitResponse(uint32_t timeout_ms, FlashConstStr r1 = GFP(AT_OK),
+                      FlashConstStr r2 = GFP(AT_ERROR), FlashConstStr r3 = NULL,
+                      FlashConstStr r4 = NULL, FlashConstStr r5 = NULL) {
     String data;
     return waitResponse(timeout_ms, data, r1, r2, r3, r4, r5);
   }
 
-  int8_t waitResponse(__FlashStringHelper* r1 = GFP(GSM_OK),
-                      __FlashStringHelper* r2 = GFP(GSM_ERROR), __FlashStringHelper* r3 = NULL,
-                      __FlashStringHelper* r4 = NULL, __FlashStringHelper* r5 = NULL) {
+  int8_t waitResponse(FlashConstStr r1 = GFP(AT_OK),
+                      FlashConstStr r2 = GFP(AT_ERROR), FlashConstStr r3 = NULL,
+                      FlashConstStr r4 = NULL, FlashConstStr r5 = NULL) {
     return waitResponse(1000, r1, r2, r3, r4, r5);
   }
 
@@ -1427,7 +1427,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
       // Cannot send anything for 1 "guard time" before entering command mode
       // Default guard time is 1s, but the init fxn decreases it to 100 ms
       delay(guardTime + 10);
-      streamWrite(F("+++"));  // enter command mode
+      streamWrite(GF("+++"));  // enter command mode
       int8_t res = waitResponse(guardTime * 2);
       success    = (1 == res);
       if (0 == res) {
@@ -1450,9 +1450,9 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
   }
 
   bool writeChanges(void) {
-    sendAT(F("WR"));  // Write changes to flash
+    sendAT(GF("WR"));  // Write changes to flash
     if (1 != waitResponse()) { return false; }
-    sendAT(F("AC"));  // Apply changes
+    sendAT(GF("AC"));  // Apply changes
     if (1 != waitResponse()) { return false; }
     return true;
   }
@@ -1460,7 +1460,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
   void exitCommand(void) {
     // NOTE:  Here we explicitely try to exit command mode
     // even if the internal flag inCommandMode was already false
-    sendAT(F("CN"));  // Exit command mode
+    sendAT(GF("CN"));  // Exit command mode
     waitResponse();
     inCommandMode = false;
   }
@@ -1471,10 +1471,10 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
   }
 
   void getSeries(void) {
-    sendAT(F("HS"));  // Get the "Hardware Series";
+    sendAT(GF("HS"));  // Get the "Hardware Series";
     int16_t intRes = readResponseInt();
     beeType        = (XBeeType)intRes;
-    DBG(F("### Modem: "), getModemName());
+    DBG(GF("### Modem: "), getModemName());
   }
 
   String readResponseString(uint32_t timeout_ms = 1000) {
@@ -1499,7 +1499,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     return intRes;
   }
 
-  String sendATGetString(__FlashStringHelper* cmd) {
+  String sendATGetString(FlashConstStr cmd) {
     XBEE_COMMAND_START_DECORATOR(5, "")
     sendAT(cmd);
     String res = readResponseString();
@@ -1507,7 +1507,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     return res;
   }
 
-  bool changeSettingIfNeeded(__FlashStringHelper* cmd, int16_t newValue,
+  bool changeSettingIfNeeded(FlashConstStr cmd, int16_t newValue,
                              uint32_t timeout_ms = 1000L) {
     sendAT(cmd);
     if (readResponseInt() != newValue) {
@@ -1521,7 +1521,7 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
     return false;
   }
 
-  bool changeSettingIfNeeded(__FlashStringHelper* cmd, String newValue,
+  bool changeSettingIfNeeded(FlashConstStr cmd, String newValue,
                              uint32_t timeout_ms = 1000L) {
     sendAT(cmd);
     if (readResponseString() != newValue) {
@@ -1546,8 +1546,8 @@ class SimpleWiFiXBee : public SimpleWiFiModem<SimpleWiFiXBee>,
   Stream& stream;
 
  protected:
-  GsmClientXBee* sockets[SIMPLE_WIFI_MUX_COUNT];
-  const char*    crlf = CRLF;
+  WiFiClientXBee* sockets[SIMPLE_WIFI_MUX_COUNT];
+  const char*    wifiLinefeed = AT_NL;
   int16_t        guardTime;
   XBeeType       beeType;
   int8_t         resetPin;

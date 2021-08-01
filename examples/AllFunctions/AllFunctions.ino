@@ -335,7 +335,7 @@ void loop() {
   res = modem.sendSMS_UTF8_begin(SMS_TARGET);
   if (res) {
     auto stream = modem.sendSMS_UTF8_stream();
-    stream.print(F("Привіііт! Print number: "));
+    stream.print(GF("Привіііт! Print number: "));
     stream.print(595);
     res = modem.sendSMS_UTF8_end();
   }

@@ -57,16 +57,16 @@ class SimpleWiFiNTP {
   byte NTPServerSyncImpl(String server = "pool.ntp.org", byte TimeZone = 3) {
     // Set GPRS bearer profile to associate with NTP sync
     // this may fail, it's not supported by all modules
-    thisModem().sendAT(F("+CNTPCID=1"));
+    thisModem().sendAT(GF("+CNTPCID=1"));
     thisModem().waitResponse(10000L);
 
     // Set NTP server and timezone
-    thisModem().sendAT(F("+CNTP=\""), server, "\",", String(TimeZone));
+    thisModem().sendAT(GF("+CNTP=\""), server, "\",", String(TimeZone));
     if (thisModem().waitResponse(10000L) != 1) { return -1; }
 
     // Request network synchronization
-    thisModem().sendAT(F("+CNTP"));
-    if (thisModem().waitResponse(10000L, F("+CNTP:"))) {
+    thisModem().sendAT(GF("+CNTP"));
+    if (thisModem().waitResponse(10000L, GF("+CNTP:"))) {
       String result = thisModem().stream.readStringUntil('\n');
       result.trim();
       if (SimpleWiFiIsValidNumber(result)) { return result.toInt(); }

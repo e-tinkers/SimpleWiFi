@@ -166,7 +166,7 @@ void printPercent(uint32_t readLength, uint32_t contentLength) {
 void loop() {
 #if SIMPLE_WIFI_USE_WIFI
   // Wifi connection parameters must be set before waiting for the network
-  SerialMon.print(F("Setting SSID/password..."));
+  SerialMon.print(GF("Setting SSID/password..."));
   if (!modem.networkConnect(wifiSSID, wifiPass)) {
     SerialMon.println(" fail");
     delay(10000);
@@ -192,7 +192,7 @@ void loop() {
 
 #if SIMPLE_WIFI_USE_GPRS
   // GPRS connection parameters are usually set after network registration
-  SerialMon.print(F("Connecting to "));
+  SerialMon.print(GF("Connecting to "));
   SerialMon.print(apn);
   if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
     SerialMon.println(" fail");
@@ -204,7 +204,7 @@ void loop() {
   if (modem.isGprsConnected()) { SerialMon.println("GPRS connected"); }
 #endif
 
-  SerialMon.print(F("Connecting to "));
+  SerialMon.print(GF("Connecting to "));
   SerialMon.print(server);
   if (!client.connect(server, port)) {
     SerialMon.println(" fail");
@@ -221,7 +221,7 @@ void loop() {
   // Let's see what the entire elapsed time is, from after we send the request.
   uint32_t timeElapsed = millis();
 
-  SerialMon.println(F("Waiting for response header"));
+  SerialMon.println(GF("Waiting for response header"));
 
   // While we are still looking for the end of the header (i.e. empty line
   // FOLLOWED by a newline), continue to read data into the buffer, parsing each
@@ -255,26 +255,26 @@ void loop() {
         // SerialMon.print(' ');
 
         // Let's exit and process if we find a new line
-        if (headerBuffer.indexOf(F("\r\n")) >= 0) break;
+        if (headerBuffer.indexOf(GF("\r\n")) >= 0) break;
       }
     } else {
       if (millis() - clientReadStartTime > clientReadTimeout) {
         // Time-out waiting for data from client
-        SerialMon.println(F(">>> Client Timeout !"));
+        SerialMon.println(GF(">>> Client Timeout !"));
         break;
       }
     }
 
     // See if we have a new line.
-    nlPos = headerBuffer.indexOf(F("\r\n"));
+    nlPos = headerBuffer.indexOf(GF("\r\n"));
 
     if (nlPos > 0) {
       headerBuffer.toLowerCase();
       // Check if line contains content-length
-      if (headerBuffer.startsWith(F("content-length:"))) {
+      if (headerBuffer.startsWith(GF("content-length:"))) {
         contentLength =
             headerBuffer.substring(headerBuffer.indexOf(':') + 1).toInt();
-        // SerialMon.print(F("Got Content Length: "));  // uncomment for
+        // SerialMon.print(GF("Got Content Length: "));  // uncomment for
         // SerialMon.println(contentLength);            // confirmation
       }
 
@@ -298,7 +298,7 @@ void loop() {
   CRC32    crc;
 
   if (finishedHeader && contentLength == knownFileSize) {
-    SerialMon.println(F("Reading response data"));
+    SerialMon.println(GF("Reading response data"));
     clientReadStartTime = millis();
 
     printPercent(readLength, contentLength);
@@ -325,15 +325,15 @@ void loop() {
   // Shutdown
 
   client.stop();
-  SerialMon.println(F("Server disconnected"));
+  SerialMon.println(GF("Server disconnected"));
 
 #if SIMPLE_WIFI_USE_WIFI
   modem.networkDisconnect();
-  SerialMon.println(F("WiFi disconnected"));
+  SerialMon.println(GF("WiFi disconnected"));
 #endif
 #if SIMPLE_WIFI_USE_GPRS
   modem.gprsDisconnect();
-  SerialMon.println(F("GPRS disconnected"));
+  SerialMon.println(GF("GPRS disconnected"));
 #endif
 
   float duration = float(timeElapsed) / 1000;

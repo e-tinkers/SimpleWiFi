@@ -67,11 +67,11 @@ void setup() {
 
   // Restart takes quite some time
   // To skip it, call init() instead of restart()
-  SerialMon.println(F("Initializing modem..."));
+  SerialMon.println(GF("Initializing modem..."));
   mdm.restart();
 
   String modemInfo = mdm.getModemInfo();
-  SerialMon.print(F("Modem: "));
+  SerialMon.print(GF("Modem: "));
   SerialMon.println(modemInfo);
 
   // Unlock your SIM card with a PIN
@@ -79,7 +79,7 @@ void setup() {
 }
 
 void loop() {
-  SerialMon.print(F("Waiting for network..."));
+  SerialMon.print(GF("Waiting for network..."));
   if (!mdm.waitForNetwork()) {
     SerialMon.println(" fail");
     delay(10000);
@@ -87,7 +87,7 @@ void loop() {
   }
   SerialMon.println(" success");
 
-  SerialMon.print(F("Connecting to "));
+  SerialMon.print(GF("Connecting to "));
   SerialMon.print(apn);
   if (!mdm.gprsConnect(apn, user, pass)) {
     SerialMon.println(" fail");
@@ -96,7 +96,7 @@ void loop() {
   }
   SerialMon.println(" success");
 
-  SerialMon.print(F("Connecting to "));
+  SerialMon.print(GF("Connecting to "));
   SerialMon.print(server);
   if (!client.connect(server, port)) {
     SerialMon.println(" fail");
@@ -124,10 +124,10 @@ void loop() {
   // Shutdown
 
   client.stop();
-  SerialMon.println(F("Server disconnected"));
+  SerialMon.println(GF("Server disconnected"));
 
   mdm.gprsDisconnect();
-  SerialMon.println(F("GPRS disconnected"));
+  SerialMon.println(GF("GPRS disconnected"));
 
   // Do nothing forevermore
   while (true) {

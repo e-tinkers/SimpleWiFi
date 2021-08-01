@@ -42,10 +42,14 @@
 
 #if defined(__AVR__) && !defined(__AVR_ATmega4809__)
 #define SIMPLE_WIFI_PROGMEM PROGMEM
-#define GFP(x) (reinterpret_cast<__FlashStringHelper*>(x))
+typedef const __FlashStringHelper* FlashConstStr;
+#define GFP(x) (reinterpret_cast<FlashConstStr>(x))
+#define GF(x) F(x)
 #else
 #define SIMPLE_WIFI_PROGMEM
+typedef const char* FlashConstStr;
 #define GFP(x) x
+#define GF(x) x
 #endif
 
 #ifdef SIMPLE_WIFI_DEBUG
@@ -64,9 +68,9 @@ static void DBG_PLAIN(T head, Args... tail) {
 
 template <typename... Args>
 static void DBG(Args... args) {
-  SIMPLE_WIFI_DEBUG.print(F("["));
+  SIMPLE_WIFI_DEBUG.print(GF("["));
   SIMPLE_WIFI_DEBUG.print(millis());
-  SIMPLE_WIFI_DEBUG.print(F("] "));
+  SIMPLE_WIFI_DEBUG.print(GF("] "));
   DBG_PLAIN(args...);
 }
 }  // namespace

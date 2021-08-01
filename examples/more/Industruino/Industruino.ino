@@ -80,11 +80,11 @@ void setup() {
 
   // Restart takes quite some time
   // To skip it, call init() instead of restart()
-  SerialMon.println(F("Initializing modem..."));
+  SerialMon.println(GF("Initializing modem..."));
   modem.restart();
 
   String modemInfo = modem.getModemInfo();
-  SerialMon.print(F("Modem: "));
+  SerialMon.print(GF("Modem: "));
   SerialMon.println(modemInfo);
 
   // Unlock your SIM card with a PIN
@@ -92,7 +92,7 @@ void setup() {
 }
 
 void loop() {
-  SerialMon.print(F("Waiting for network..."));
+  SerialMon.print(GF("Waiting for network..."));
   if (!modem.waitForNetwork()) {
     SerialMon.println(" fail");
     delay(10000);
@@ -100,7 +100,7 @@ void loop() {
   }
   SerialMon.println(" success");
 
-  SerialMon.print(F("Connecting to "));
+  SerialMon.print(GF("Connecting to "));
   SerialMon.print(apn);
   if (!modem.gprsConnect(apn, user, pass)) {
     SerialMon.println(" fail");
@@ -109,10 +109,10 @@ void loop() {
   }
   SerialMon.println(" success");
 
-  SerialMon.print(F("Performing HTTP GET request... "));
+  SerialMon.print(GF("Performing HTTP GET request... "));
   int err = http.get(resource);
   if (err != 0) {
-    SerialMon.println(F("failed to connect"));
+    SerialMon.println(GF("failed to connect"));
     delay(10000);
     return;
   }
@@ -132,27 +132,27 @@ void loop() {
 
   int length = http.contentLength();
   if (length >= 0) {
-    SerialMon.print(F("Content length is: "));
+    SerialMon.print(GF("Content length is: "));
     SerialMon.println(length);
   }
   if (http.isResponseChunked()) {
-    SerialMon.println(F("The response is chunked"));
+    SerialMon.println(GF("The response is chunked"));
   }
 
   String body = http.responseBody();
-  SerialMon.println(F("Response:"));
+  SerialMon.println(GF("Response:"));
   SerialMon.println(body);
 
-  SerialMon.print(F("Body length is: "));
+  SerialMon.print(GF("Body length is: "));
   SerialMon.println(body.length());
 
   // Shutdown
 
   http.stop();
-  SerialMon.println(F("Server disconnected"));
+  SerialMon.println(GF("Server disconnected"));
 
   modem.gprsDisconnect();
-  SerialMon.println(F("GPRS disconnected"));
+  SerialMon.println(GF("GPRS disconnected"));
 
   // Do nothing forevermore
   while (true) {

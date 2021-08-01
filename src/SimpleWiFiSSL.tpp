@@ -44,12 +44,12 @@ class SimpleWiFiSSL {
    */
   /*
  public:
-  class GsmClientSecure : public GsmClient {
+  class WiFiClientSecure : public WiFiClient {
    public:
-    GsmClientSecureSim800() {}
+    WiFiClientSecureSim800() {}
 
-    explicit GsmClientSecureSim800(SimpleWiFiSim800& modem, uint8_t mux = 0)
-        : GsmClientSim800(modem, mux) {}
+    explicit WiFiClientSecureSim800(SimpleWiFiSim800& modem, uint8_t mux = 0)
+        : WiFiClientSim800(modem, mux) {}
 
    public:
     int connect(const char* host, uint16_t port, int timeout_s) overide {
